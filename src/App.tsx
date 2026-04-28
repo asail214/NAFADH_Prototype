@@ -1,3 +1,5 @@
+import nafadhLogo from './assets/logos/logo-nafadh.png';
+import nafadhLogoWhite from './assets/logos/nafadhLogoWhite.png';
 import { useEffect, useMemo, useState } from 'react';
 
 const BRAND = {
@@ -2612,11 +2614,8 @@ export default function App() {
       <header className="sticky top-0 z-30 border-b bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <button type="button" onClick={() => goToPage('home')} className="flex items-center gap-3 text-left">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#10b3b7] to-[#123b8b] font-bold text-white shadow-lg">N</div>
             <div>
-              <div className="text-2xl font-bold text-[#123b8b]">Nafadh</div>
-              <div className="text-xs text-gray-500">Unified Digital Platform</div>
-            </div>
+              <img   src={nafadhLogo}   alt="Nafadh"   className="h-12 w-auto object-contain"/>            </div>
           </button>
 
           <nav className="hidden items-center gap-6 text-sm md:flex">
@@ -2725,11 +2724,8 @@ export default function App() {
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#10b3b7] to-[#123b8b] font-bold text-white">N</div>
               <div>
-                <div className="text-xl font-bold text-white">Nafadh</div>
-                <div className="text-xs text-slate-400">Unified Digital Platform</div>
-              </div>
+                <img   src={nafadhLogoWhite}   alt="Nafadh"  className="h-14 w-auto object-contain" />              </div>
             </div>
             <p className="mt-4 text-sm leading-7 text-slate-400">
               A service-focused digital ecosystem connecting work, talent, tenders, and training through one clear experience.
