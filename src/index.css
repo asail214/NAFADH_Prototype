@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+.trusted-logo-track {
+  display: flex;
+  width: max-content;
+  animation: trustedLogoScroll 35s linear infinite;
+  will-change: transform;
+}
+
+@keyframes trustedLogoScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}
+
+.trusted-logo-track:hover {
+  animation-play-state: paused;
+}

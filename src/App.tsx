@@ -1,6 +1,14 @@
 import nafadhLogo from './assets/logos/logo-nafadh.png';
 import nafadhLogoWhite from './assets/logos/nafadhLogoWhite.png';
-import { useEffect, useMemo, useState } from 'react';
+import globcomLogo from './assets/logos/globcom.png';
+import riyadaLogo from './assets/logos/ryiada.png';
+import awasrLogo from './assets/logos/awasr.png';
+import omanBroadbandLogo from './assets/logos/omanbroadband.png';
+import omantelLogo from './assets/logos/omantel.png';
+import ooredooLogo from './assets/logos/ooredoo.png';
+import omrIconBlue from './assets/Icons/OmaniRial_Blue.png';
+import omrIconBlack from './assets/Icons/OmaniRial_Black.png';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const BRAND = {
   primary: '#123b8b',
@@ -9,6 +17,33 @@ const BRAND = {
   light: '#f2f4f7',
   soft: '#d9e1ea',
 };
+
+// Omani Rial Symbol Component — uses official CBO icon from assets
+// Per CBO guidelines: symbol precedes value with a space
+function OmrIcon({ size = 16, variant = 'blue' }: { size?: number; variant?: 'blue' | 'black' }) {
+  const src = variant === 'black' ? omrIconBlack : omrIconBlue;
+  return (
+    <img
+      src={src}
+      alt="OMR"
+      className="inline-block"
+      style={{ width: size, height: 'auto', verticalAlign: 'middle', marginRight: 2 }}
+    />
+  );
+}
+
+// Renders text like "OMR 600 - 1,200" as [icon] 600 - 1,200
+// Handles "OMR" prefix replacement while leaving "Coming Soon" etc. untouched
+function OmrText({ text, size = 14, variant = 'blue' }: { text: string; size?: number; variant?: 'blue' | 'black' }) {
+  if (!text || !text.includes('OMR')) return <>{text}</>;
+  const parts = text.replace('OMR ', '').replace('OMR', '');
+  return (
+    <span style={{ whiteSpace: 'nowrap' }}>
+      <OmrIcon size={size} variant={variant} />
+      {parts}
+    </span>
+  );
+}
 
 
 const AR_TRANSLATIONS = {
@@ -231,7 +266,7 @@ const AR_TRANSLATIONS = {
   'Explore opportunities': 'استكشاف الفرص',
   'Browse talent': 'استعراض الكفاءات',
   'View training': 'عرض التدريب',
-  'Switch user type': 'تبديل نوع المستخدم',
+  'Log out': 'تسجيل الخروج',
   'Profile Strength': 'قوة الملف',
   'Published Services': 'الخدمات المنشورة',
   'Portfolio Items': 'أعمال المعرض',
@@ -406,6 +441,220 @@ const AR_TRANSLATIONS = {
   'Each user type understands where to start.': 'كل نوع من المستخدمين يعرف من أين يبدأ.',
   'Future matching can rely on skills and profiles.': 'يمكن أن تعتمد المطابقة المستقبلية على المهارات والملفات المهنية.',
   'Ready to grow with applications, interviews, offers, and evaluations.': 'قابلة للتوسع مع الطلبات، والمقابلات، والعروض، والتقييمات.',
+  'Log in to Nafadh': 'تسجيل الدخول إلى نفاذ',
+  'Enter your email and password. Nafadh will detect your account type and take you to the right dashboard.': 'أدخل بريدك الإلكتروني وكلمة المرور، وسيحدد نفاذ نوع حسابك وينقلك إلى لوحة التحكم المناسبة.',
+  'Log in with PKI': 'الدخول باستخدام PKI',
+  'Prototype demo access': 'وصول تجريبي للنموذج الأولي',
+  'Preview protected dashboards for testing. Admin remains login-only.': 'استعرض لوحات التحكم المحمية لأغراض الاختبار. تبقى إدارة النظام متاحة عبر تسجيل الدخول فقط.',
+  'Choose demo dashboard': 'اختر لوحة تحكم تجريبية',
+  'Hide': 'إخفاء',
+  'Open Tickets': 'التذاكر المفتوحة',
+  'Submit Ticket': 'إرسال التذكرة',
+  'Create Account': 'إنشاء حساب',
+  'Choose how you want to use Nafadh': 'اختر كيف تريد استخدام نفاذ',
+  'Offer services, build a profile, and apply to projects.': 'قدّم خدماتك، وابنِ ملفك، وتقدّم للمشاريع.',
+  'Create a career profile and prepare for future job matching.': 'أنشئ ملفًا مهنيًا واستعد للمطابقة الوظيفية المستقبلية.',
+  'Post opportunities, request skilled people, and manage hiring.': 'انشر الفرص، واطلب أصحاب المهارات، وأدر التوظيف.',
+  'Request services as a person, trader, or shop owner.': 'اطلب الخدمات كفرد أو تاجر أو صاحب محل.',
+  'Choose your account type first. The registration form updates to show only the relevant information.': 'اختر نوع الحساب أولًا، وسيتحدث نموذج التسجيل لعرض المعلومات المناسبة فقط.',
+  'Create Freelancer Account': 'إنشاء حساب مستقل',
+  'Create Job Seeker Account': 'إنشاء حساب باحث عن عمل',
+  'Create Company Account': 'إنشاء حساب شركة',
+  'Create Individual Client Account': 'إنشاء حساب فرد / عميل',
+  'Activity Summary': 'ملخص النشاط',
+  'Recent Activity': 'آخر النشاطات',
+  'A quick overview of work volume across the last months.': 'نظرة مختصرة على حجم العمل خلال الأشهر الأخيرة.',
+  'Prototype chart': 'مخطط تجريبي',
+  'Today’s freelancer actions': 'إجراءات المستقل اليوم',
+  'Freelancer workspace': 'مساحة عمل المستقل',
+  'Career profile status': 'حالة الملف المهني',
+  'Hiring guidance': 'إرشادات التوظيف',
+  'Simple service request': 'طلب خدمة مبسط',
+  'Operator role boundary': 'حدود دور المشغّل',
+  'Admin access note': 'ملاحظة صلاحيات المدير',
+  'Profile Readiness': 'جاهزية الملف',
+  'Matched Projects': 'المشاريع المطابقة',
+  'Active Contracts': 'العقود النشطة',
+  'Pending Payments': 'المدفوعات المعلقة',
+  'CV Strength': 'قوة السيرة الذاتية',
+  'Posted Opportunities': 'الفرص المنشورة',
+  'Open Tenders': 'المناقصات المفتوحة',
+  'Open Requests': 'الطلبات المفتوحة',
+  'Offers Received': 'العروض المستلمة',
+  'Completed Requests': 'الطلبات المكتملة',
+  'Submitted Reviews': 'المراجعات المقدمة',
+  'Active Programs': 'البرامج النشطة',
+  'Applicant Queues': 'قوائم المتقدمين',
+  'Open Cases': 'الحالات المفتوحة',
+  'Total Users': 'إجمالي المستخدمين',
+  'Pending Reviews': 'المراجعات المعلقة',
+  'Active Opportunities': 'الفرص النشطة',
+  'Open Disputes': 'النزاعات المفتوحة',
+  'Export': 'تصدير',
+  'Export Excel': 'تصدير Excel',
+  'Export PDF': 'تصدير PDF',
+  'Support Center': 'مركز الدعم',
+  'Create Support Ticket': 'إنشاء تذكرة دعم',
+  'Support Topic': 'موضوع الدعم',
+  'Priority': 'الأولوية',
+  'Related Project / Offer': 'المشروع / العرض المرتبط',
+  'Avg. Response': 'متوسط الاستجابة',
+  'Guides': 'الأدلة',
+  'Courses & Training': 'الدورات والتدريب',
+  'Recommended Courses': 'الدورات المقترحة',
+  'Skill Gaps': 'فجوات المهارات',
+  'Course / Program': 'الدورة / البرنامج',
+  'Related Skills': 'المهارات المرتبطة',
+  'Provider': 'المزود',
+  'Upload Certificate': 'رفع شهادة',
+  'Certificate Name': 'اسم الشهادة',
+  'Related Skill': 'المهارة المرتبطة',
+  'Verification Status': 'حالة التحقق',
+  'Credential Score': 'درجة الاعتماد',
+  'Career Preferences': 'التفضيلات المهنية',
+  'Profile Visibility': 'ظهور الملف',
+  'Relocation': 'الانتقال',
+  'Opportunity Alerts': 'تنبيهات الفرص',
+  'Interview Reminders': 'تذكيرات المقابلات',
+  'Save Settings': 'حفظ الإعدادات',
+  'Draft Submissions': 'المسودات',
+  'Closing Soon': 'تغلق قريبًا',
+  'Tender': 'المناقصة',
+  'Closing Date': 'تاريخ الإغلاق',
+  'Training Requests': 'طلبات التدريب',
+  'Submitted Requests': 'الطلبات المقدمة',
+  'Participants': 'المشاركون',
+  'New Training Request': 'طلب تدريب جديد',
+  'Training Topic': 'موضوع التدريب',
+  'Expected Participants': 'عدد المشاركين المتوقع',
+  'Preferred Delivery': 'طريقة التنفيذ المفضلة',
+  'Submit Request': 'إرسال الطلب',
+  'Need Assessment': 'تحتاج تقييمًا',
+  'Reschedule Requests': 'طلبات إعادة الجدولة',
+  'Admin Action': 'إجراء المدير',
+  'Personal website setup': 'إعداد موقع شخصي',
+  'Router configuration support': 'دعم إعداد الراوتر',
+  'Install CCTV cameras for home': 'تركيب كاميرات مراقبة للمنزل',
+  'Compare': 'مقارنة',
+  'Offers / Update': 'العروض / التحديث',
+  'Post Service Request': 'نشر طلب خدمة',
+  'Request Details': 'تفاصيل الطلب',
+  'Request Title': 'عنوان الطلب',
+  'Service Category': 'تصنيف الخدمة',
+  'Budget Range': 'نطاق الميزانية',
+  'Request Description': 'وصف الطلب',
+  'Publish Request': 'نشر الطلب',
+  'Saved Talent Directory': 'دليل الكفاءات المحفوظة',
+  'Saved Date': 'تاريخ الحفظ',
+  'Invoice Number': 'رقم الفاتورة',
+  'Amount': 'المبلغ',
+  'Due': 'الاستحقاق',
+  'Create Support Request': 'إنشاء طلب دعم',
+  'Issue Type': 'نوع المشكلة',
+  'Related Request': 'الطلب المرتبط',
+  'Needs Fix': 'يحتاج تعديلًا',
+  'Ready to Publish': 'جاهز للنشر',
+  'Escalated': 'تم التصعيد',
+  'Operator Action': 'إجراء المشغّل',
+  'Applicant Monitoring': 'متابعة المتقدمين',
+  'Blocked': 'محظور',
+  'Current Step': 'الخطوة الحالية',
+  'Operator Note': 'ملاحظة المشغّل',
+  'Interview Coordination': 'تنسيق المقابلات',
+  'Training Operations': 'عمليات التدريب',
+  'Registrations': 'التسجيلات',
+  'Certificates Pending': 'الشهادات المعلقة',
+  'Support Requests': 'طلبات الدعم',
+  'Operator Settings': 'إعدادات المشغّل',
+  'Default Queue': 'القائمة الافتراضية',
+  'Notification Preference': 'تفضيل الإشعارات',
+  'System Configuration': 'إعدادات النظام',
+  'Website Content Management': 'إدارة محتوى الموقع',
+  'Verification Center': 'مركز التحقق',
+  'Workflow Monitor': 'مراقبة سير العمل',
+  'Disputes & Escalations': 'النزاعات والتصعيدات',
+  'Reports & Audit Logs': 'التقارير وسجلات التدقيق',
+  'Audit Events': 'أحداث التدقيق',
+  'Actor': 'المنفذ',
+  'Module': 'الوحدة',
+  'Date': 'التاريخ',
+  'Event': 'الحدث',
+  'Project Search & Filters': 'بحث وتصفية المشاريع',
+  'Recommended Matches': 'المطابقات المقترحة',
+  'Saved Projects': 'المشاريع المحفوظة',
+  'Offer Readiness': 'جاهزية العرض',
+  'Project Value': 'قيمة المشروع',
+  'Match Score': 'درجة المطابقة',
+  'Submission readiness': 'جاهزية التقديم',
+  'Before You Apply': 'قبل التقديم',
+  'Profile Completion Checklist': 'قائمة استكمال الملف',
+  'Profile Completion': 'اكتمال الملف',
+  'Average Rating': 'متوسط التقييم',
+  'General Details': 'التفاصيل العامة',
+  'Professional Overview': 'نبذة مهنية',
+  'Main Service': 'الخدمة الرئيسية',
+  'Top Skill': 'المهارة الأعلى',
+  'Save and Continue': 'حفظ ومتابعة',
+  'Offer Builder': 'منشئ العرض',
+  'Evaluation Signals': 'مؤشرات التقييم',
+  'Proposed Timeline': 'المدة المقترحة',
+  'Proposed Value': 'القيمة المقترحة',
+  'Delivery Method': 'طريقة التسليم',
+  'Cover Letter': 'خطاب العرض',
+  'Save Draft Offer': 'حفظ مسودة العرض',
+  'Contracts': 'العقود',
+  'Milestone Timeline': 'الجدول المرحلي',
+  'Payments & Tasks': 'المدفوعات والمهام',
+  'Withdraw Funds': 'سحب الأموال',
+  'Available Amount': 'المبلغ المتاح',
+  'Bank Account': 'الحساب البنكي',
+  'Withdrawal Type': 'نوع السحب',
+  'Request Withdrawal': 'طلب السحب',
+  'Task Delivery Checklist': 'قائمة تسليم المهمة',
+  'Disputes': 'النزاعات',
+  'Create Dispute / Clarification': 'إنشاء نزاع / توضيح',
+  'Dispute Type': 'نوع النزاع',
+  'Evidence': 'الدليل',
+  'Explanation': 'التوضيح',
+  'Submit for Review': 'إرسال للمراجعة',
+  'Direct messages between freelancer, client, and support with project context.': 'رسائل مباشرة بين المستقل والعميل والدعم مع ربطها بسياق المشروع.',
+  'Write a message': 'اكتب رسالة',
+  'Send': 'إرسال',
+  'Account & Visibility': 'الحساب والظهور',
+  'Work Preferences': 'تفضيلات العمل',
+  'Security': 'الأمان',
+  'Notifications': 'الإشعارات',
+  'Monitor': 'مراقبة',
+  'Remind': 'تذكير',
+  'Coordinate': 'تنسيق',
+  'Continue': 'متابعة',
+  'Schedule': 'جدولة',
+  'Register': 'تسجيل',
+  'Upload': 'رفع',
+  'Open tender': 'فتح المناقصة',
+  'No results found': 'لا توجد نتائج',
+  'Try adjusting your filters or search term': 'حاول تعديل الفلاتر أو كلمة البحث',
+  'No opportunities match your current filters.': 'لا توجد فرص تطابق الفلاتر الحالية.',
+  'No talent profiles match your current filters.': 'لا توجد ملفات كفاءات تطابق الفلاتر الحالية.',
+  'No training opportunities match your current filters.': 'لا توجد فرص تدريبية تطابق الفلاتر الحالية.',
+  'Clear Filters': 'مسح الفلاتر',
+  'Copyright © 2026 TRA Sultanate Of Oman. All Rights Reserved.': 'حقوق الطبع والنشر © 2026 هيئة تنظيم الاتصالات - سلطنة عُمان. جميع الحقوق محفوظة.',
+  'Notification Center': 'مركز الإشعارات',
+  'Mark all as read': 'تحديد الكل كمقروء',
+  'New application received for your opportunity': 'تم استلام طلب جديد لفرصتك',
+  'Your proposal was viewed by the client': 'تم عرض عرضك من قبل العميل',
+  'New training workshop available': 'ورشة تدريبية جديدة متاحة',
+  'Profile strength increased to 85%': 'ارتفعت قوة الملف إلى 85%',
+  'just now': 'الآن',
+  'ago': 'منذ',
+  '2 hours ago': 'منذ ساعتين',
+  '1 day ago': 'منذ يوم واحد',
+  '3 days ago': 'منذ 3 أيام',
+  'View All Notifications': 'عرض جميع الإشعارات',
+  'This field is required': 'هذا الحقل مطلوب',
+  'Menu': 'القائمة',
+  'Close menu': 'إغلاق القائمة',
+  'Message Center': 'مركز الرسائل',
 };
 
 function translateText(value, language) {
@@ -560,6 +809,58 @@ function FooterLinkButton({ label, onClick }) {
   );
 }
 
+function EmptyState({ icon = '📭', title = 'No results found', message = 'Try adjusting your filters or search term', actionLabel, onAction }: { icon?: string; title?: string; message?: string; actionLabel?: string; onAction?: () => void }) {
+  return (
+    <div className="col-span-full flex flex-col items-center justify-center rounded-[2rem] bg-white px-8 py-16 text-center shadow-lg">
+      <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#f2f4f7] text-4xl">{icon}</div>
+      <h3 className="mt-5 text-xl font-bold text-[#123b8b]">{title}</h3>
+      <p className="mt-2 max-w-md text-sm leading-6 text-gray-500">{message}</p>
+      {actionLabel && onAction ? (
+        <button
+          type="button"
+          onClick={onAction}
+          className="mt-5 rounded-xl bg-[#123b8b] px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-lg"
+        >
+          {actionLabel}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+function NotificationDropdown({ isOpen, onClose }) {
+  const notifications = [
+    { text: 'New application received for your opportunity', time: '2 hours ago', icon: '📩', unread: true },
+    { text: 'Your proposal was viewed by the client', time: '1 day ago', icon: '👁️', unread: true },
+    { text: 'New training workshop available', time: '3 days ago', icon: '🎓', unread: false },
+    { text: 'Profile strength increased to 85%', time: '3 days ago', icon: '📈', unread: false },
+  ];
+  if (!isOpen) return null;
+  return (
+    <div className="absolute right-0 top-full z-50 mt-2 w-[340px] rounded-2xl border border-gray-100 bg-white p-2 shadow-2xl">
+      <div className="flex items-center justify-between px-3 py-2">
+        <span className="text-sm font-bold text-[#123b8b]">Notification Center</span>
+        <button type="button" onClick={onClose} className="text-xs font-medium text-[#10b3b7] hover:underline">Mark all as read</button>
+      </div>
+      <div className="max-h-[280px] space-y-1 overflow-y-auto">
+        {notifications.map((n, i) => (
+          <div key={i} className={`flex items-start gap-3 rounded-xl px-3 py-3 transition hover:bg-gray-50 ${n.unread ? 'bg-[#f0f7ff]' : ''}`}>
+            <span className="mt-0.5 text-lg">{n.icon}</span>
+            <div className="flex-1">
+              <p className="text-sm leading-5 text-gray-800">{n.text}</p>
+              <span className="mt-1 text-xs text-gray-400">{n.time}</span>
+            </div>
+            {n.unread ? <span className="mt-1.5 h-2 w-2 rounded-full bg-[#10b3b7]" /> : null}
+          </div>
+        ))}
+      </div>
+      <div className="mt-1 border-t border-gray-100 px-3 py-2">
+        <button type="button" className="w-full rounded-lg py-2 text-center text-xs font-semibold text-[#123b8b] transition hover:bg-[#f0f7ff]">View All Notifications</button>
+      </div>
+    </div>
+  );
+}
+
 function FilterInput({ value, onChange, placeholder }) {
   return (
     <div>
@@ -597,8 +898,6 @@ function SelectField({ label, value, onChange, options }) {
 function AuthVisualPanel({ badge, title = 'Nafadh', subtitle = 'Your gateway to work and services' }) {
   return (
     <div className="relative hidden min-h-[720px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0f172a] via-[#123b8b] to-[#10b3b7] p-10 text-white shadow-2xl lg:block">
-      <div className="absolute -left-12 top-20 h-72 w-72 rounded-full border border-white/25" />
-      <div className="absolute left-20 top-36 h-80 w-80 rounded-full border border-cyan-300/35" />
       <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
 
       <div className="relative z-10 flex h-full flex-col justify-between">
@@ -654,10 +953,43 @@ export default function App() {
   const [trainingFormat, setTrainingFormat] = useState('All Formats');
 
   const [loginRole, setLoginRole] = useState('Freelancer');
+  const [isDemoAccessOpen, setIsDemoAccessOpen] = useState(false);
   const [registerRole, setRegisterRole] = useState('Freelancer');
   const [loginRequiredModal, setLoginRequiredModal] = useState<{ context: string } | null>(null);
   const [activeProfileTab, setActiveProfileTab] = useState('Education');
   const [activeOpportunityStep, setActiveOpportunityStep] = useState('Basic Information');
+  const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
+
+  // New state: notifications, redirect intent, mobile dashboard sidebar
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState<string | null>(null);
+  const [isMobileDashSidebarOpen, setIsMobileDashSidebarOpen] = useState(false);
+
+  // Click-outside handler: close all dropdowns when clicking outside
+  const servicesMenuRef = useRef<HTMLDivElement>(null);
+  const languageMenuRef = useRef<HTMLDivElement>(null);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (servicesMenuRef.current && !servicesMenuRef.current.contains(target)) {
+        setIsServicesMenuOpen(false);
+      }
+      if (languageMenuRef.current && !languageMenuRef.current.contains(target)) {
+        setIsLanguageMenuOpen(false);
+      }
+      if (exportMenuRef.current && !exportMenuRef.current.contains(target)) {
+        setIsExportMenuOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(target)) {
+        setIsNotificationOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const scrollToTop = () => {
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -677,7 +1009,7 @@ export default function App() {
     }
     styleTag.textContent = `
       html[dir="rtl"] body {
-        font-family: Tahoma, Arial, sans-serif;
+        font-family: 'Cairo', Tahoma, Arial, sans-serif;
         word-spacing: 0.04em;
       }
       html[dir="rtl"] .text-left { text-align: right !important; }
@@ -708,7 +1040,7 @@ export default function App() {
       window.clearTimeout(timer);
       window.clearTimeout(timer2);
     };
-  });
+  }, [language, currentPage]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -727,11 +1059,13 @@ export default function App() {
     setIsServicesMenuOpen(false);
     setIsMobileMenuOpen(false);
     setIsLanguageMenuOpen(false);
+    setIsExportMenuOpen(false);
     scrollToTop();
   };
 
   const openLoginRequiredModal = (context = 'details') => {
     setLoginRequiredModal({ context });
+    setRedirectAfterLogin(currentPage);
   };
 
   const closeLoginRequiredModal = () => {
@@ -774,7 +1108,7 @@ export default function App() {
       icon: '🏠',
       description: 'For a person, trader, or shop owner who needs a freelancer or job seeker for a specific service.',
       action: 'Post Request',
-      page: 'hire',
+      page: 'join',
       tone: 'cyan',
     },
   ];
@@ -790,7 +1124,14 @@ export default function App() {
     { title: 'Business Support', icon: '📁', category: 'Operations' },
   ];
 
-  const trustedEntities = ['GLOBCOM', 'riyadā', 'Oman Broadband', 'Omantel', 'ooredoo', 'AWASR'];
+  const trustedEntities = [
+    { name: 'Omantel', logo: omantelLogo, link: 'https://www.omantel.om/' },
+    { name: 'Ooredoo', logo: ooredooLogo, link: 'https://www.ooredoo.om/' },
+    { name: 'Riyada', logo: riyadaLogo, link: 'https://www.sme.gov.om/' },
+    { name: 'Oman Broadband', logo: omanBroadbandLogo, link: 'https://omanbroadband.om/' },
+    { name: 'AWASR', logo: awasrLogo, link: 'https://www.awasr.om/ar/package/journey/ZVANH?promotionTerm=24' },
+    { name: 'GLOBCOM', logo: globcomLogo, link: 'https://www.globcom.om/' },
+  ];
 
   const opportunityListings = [
     {
@@ -1207,18 +1548,33 @@ export default function App() {
         </div>
       </section>
 
-      <section className="bg-[#e5e9f0] py-14 text-center">
+      <section className="overflow-hidden bg-[#e5e9f0] py-14 text-center">
         <div className="mx-auto max-w-7xl px-6">
-          <h2 className="mb-3 text-3xl font-bold text-[#123b8b]">Trusted By Leading Companies And Institutions</h2>
+          <h2 className="mb-3 text-3xl font-bold text-[#123b8b]">
+            Trusted By Leading Companies And Institutions
+          </h2>
           <p className="mb-8 text-gray-600">
             Organizations that can post opportunities, support training, and participate in the Nafadh ecosystem.
           </p>
-          <div className="flex gap-6 overflow-x-auto px-1 pb-2">
-            {trustedEntities.map((item, index) => (
-              <div key={`${item}-${index}`} className="min-w-[200px] rounded-xl bg-white px-8 py-6 shadow">
-                <span className="text-lg font-semibold text-gray-600">{item}</span>
-              </div>
-            ))}
+
+          <div className="relative overflow-hidden" dir="ltr">
+            <div className="trusted-logo-track flex w-max items-center gap-8">
+                {[...trustedEntities, ...trustedEntities, ...trustedEntities].map((item, index) => (
+                  <a
+                    key={`${item.name}-${index}`}
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-28 w-56 shrink-0 items-center justify-center rounded-2xl bg-white px-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  >
+                    <img
+                      src={item.logo}
+                      alt={item.name}
+                      className="max-h-16 max-w-[170px] object-contain opacity-85 transition hover:opacity-100"
+                    />
+                  </a>
+                ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1412,7 +1768,15 @@ export default function App() {
         </section>
 
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredOpportunities.map((opportunity) => (
+          {filteredOpportunities.length === 0 ? (
+            <EmptyState
+              icon="🔍"
+              title="No results found"
+              message="No opportunities match your current filters."
+              actionLabel="Clear Filters"
+              onAction={() => { setWorkSearch(''); setWorkAudience('All'); setWorkType('All Types'); setWorkCategory('All Categories'); }}
+            />
+          ) : filteredOpportunities.map((opportunity) => (
             <div key={opportunity.title} className="rounded-[2rem] bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -1430,7 +1794,7 @@ export default function App() {
               <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
                 <div className="rounded-xl bg-[#f7f9fc] px-4 py-3">
                   <div className="text-xs text-gray-500">Budget / Status</div>
-                  <div className="mt-1 font-semibold text-[#123b8b]">{opportunity.budget}</div>
+                  <div className="mt-1 font-semibold text-[#123b8b]"><OmrText text={opportunity.budget} /></div>
                 </div>
                 <div className="rounded-xl bg-[#f7f9fc] px-4 py-3">
                   <div className="text-xs text-gray-500">Posted By</div>
@@ -1502,7 +1866,15 @@ export default function App() {
         </section>
 
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredTalent.map((talent) => (
+          {filteredTalent.length === 0 ? (
+            <EmptyState
+              icon="👥"
+              title="No results found"
+              message="No talent profiles match your current filters."
+              actionLabel="Clear Filters"
+              onAction={() => { setHireSearch(''); setHireTalentType('All Talent'); setHireCategory('All Categories'); setHireLevel('All Levels'); }}
+            />
+          ) : filteredTalent.map((talent) => (
             <div key={talent.name} className="rounded-[2rem] bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -1532,7 +1904,7 @@ export default function App() {
                 </div>
                 <div className="rounded-xl bg-[#f7f9fc] px-4 py-3">
                   <div className="text-xs text-gray-500">Rate / Status</div>
-                  <div className="mt-1 font-semibold text-[#123b8b]">{talent.rate}</div>
+                  <div className="mt-1 font-semibold text-[#123b8b]"><OmrText text={talent.rate} /></div>
                 </div>
               </div>
 
@@ -1584,7 +1956,15 @@ export default function App() {
         </section>
 
         <section className="grid gap-6 md:grid-cols-2">
-          {filteredTrainings.map((training) => (
+          {filteredTrainings.length === 0 ? (
+            <EmptyState
+              icon="🎓"
+              title="No results found"
+              message="No training opportunities match your current filters."
+              actionLabel="Clear Filters"
+              onAction={() => { setTrainingSearch(''); setTrainingSource('All Sources'); setTrainingFormat('All Formats'); }}
+            />
+          ) : filteredTrainings.map((training) => (
             <div key={training.title} className="rounded-[2rem] bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <span className="text-3xl">{training.icon}</span>
@@ -1623,7 +2003,7 @@ export default function App() {
             ['35+', 'Training Programs', '🎓'],
             ['25+', 'Partner Entities', '🤝'],
           ].map(([value, label, icon]) => (
-            <div key={label} className="flex min-h-[132px] items-center justify-between gap-5 rounded-[1.5rem] border border-blue-100 bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+            <div key={String(label)} className="flex min-h-[132px] items-center justify-between gap-5 rounded-[1.5rem] border border-blue-100 bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#eaf4ff] text-2xl">{icon}</div>
               <div className="text-right">
                 <div className="text-3xl font-bold leading-none text-[#123b8b]">{value}</div>
@@ -1805,7 +2185,7 @@ export default function App() {
                   ['✉️', 'Email', 'info@nafadh.om'],
                   ['📞', 'Phone', '22650660'],
                 ].map(([icon, label, text]) => (
-                  <div key={label} className="flex items-start gap-3 rounded-xl bg-white/10 px-4 py-4">
+                  <div key={String(label)} className="flex items-start gap-3 rounded-xl bg-white/10 px-4 py-4">
                     <span className="text-lg">{icon}</span>
                     <div>
                       <div className="font-semibold">{label}</div>
@@ -1878,6 +2258,48 @@ export default function App() {
           <div className="mt-8 space-y-4">
             <PrimaryButton className="w-full" onClick={() => goToDashboard(loginRole)}>Log in</PrimaryButton>
             <OutlineButton className="w-full" onClick={() => {}}>Log in with PKI</OutlineButton>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-[#d9e1ea] bg-[#f7f9fc] p-4">
+            <button
+              type="button"
+              onClick={() => setIsDemoAccessOpen((open) => !open)}
+              className="flex w-full items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              aria-expanded={isDemoAccessOpen}
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eaf4ff] text-lg">🧭</span>
+                <div>
+                  <div className="text-sm font-bold text-[#123b8b]">Prototype demo access</div>
+                  <p className="mt-1 text-xs leading-5 text-gray-600">Preview protected dashboards for testing. Admin remains login-only.</p>
+                </div>
+              </div>
+              <span className="rounded-full bg-[#123b8b] px-3 py-1 text-xs font-semibold text-white">
+                {isDemoAccessOpen ? 'Hide' : 'Open'}
+              </span>
+            </button>
+
+            {isDemoAccessOpen ? (
+              <div className="mt-4 rounded-2xl border border-blue-100 bg-white p-4 shadow-inner">
+                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Choose demo dashboard</div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {['Freelancer', 'Job Seeker', 'Company', 'Individual Client', 'Operator', 'System Admin'].map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => goToDashboard(role)}
+                      className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${
+                        role === 'System Admin'
+                          ? 'border-[#123b8b] bg-[#123b8b] text-white shadow-md hover:bg-[#0d2f70]'
+                          : 'border-gray-200 bg-white text-[#123b8b] hover:border-[#10b3b7] hover:bg-[#eefcff]'
+                      }`}
+                    >
+                      {role === 'System Admin' ? '🔐 ' : '👤 '}{role}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-8 text-center text-sm text-gray-600">
@@ -2070,12 +2492,12 @@ export default function App() {
   };
 
   const dashboardNavigation = {
-    Freelancer: { Dashboard: 'dashboard-freelancer', 'My Profile': 'freelancer-profile', 'Find Work': 'work', Proposals: 'freelancer-proposals', 'Active Projects': 'freelancer-projects', Portfolio: 'freelancer-portfolio', Payments: 'freelancer-payments', Support: 'contact' },
-    'Job Seeker': { Dashboard: 'dashboard-jobseeker', 'My CV': 'jobseeker-profile', 'Job Matches': 'jobseeker-opportunities', Applications: 'jobseeker-applications', Interviews: 'jobseeker-interviews', Offers: 'jobseeker-offers', Courses: 'jobseeker-training', Certificates: 'jobseeker-profile', Settings: 'dashboard-jobseeker' },
-    'Company': { Dashboard: 'dashboard-company', 'Company Profile': 'company-profile', 'Post Opportunity': 'company-create-opportunity', Applicants: 'company-applications', 'Hire Talent': 'company-candidate-search', Interviews: 'company-interviews', Offers: 'company-offers', Tenders: 'hire', 'Training Requests': 'training', Reports: 'company-reports' },
-    'Individual Client': { Dashboard: 'dashboard-individual', 'Individual Profile': 'individual-profile', 'Post Request': 'company-create-opportunity', 'My Requests': 'company-applications', Messages: 'dashboard-individual', 'Saved Talent': 'hire', Invoices: 'dashboard-individual', Support: 'contact' },
-    Operator: { Dashboard: 'dashboard-operator', Opportunities: 'admin-opportunities', Tenders: 'hire', Training: 'training', Applicants: 'company-applications', Evaluations: 'admin-credentials', Reports: 'admin-reports', Settings: 'admin-config' },
-    'System Admin': { Dashboard: 'dashboard-admin', 'System Admin': 'admin-config', 'User Management': 'admin-users', 'Skills Management': 'admin-skills', 'Credential Management': 'admin-credentials', 'Interview Management': 'company-interviews', 'Project Monitoring': 'admin-opportunities', 'Payment Disputes': 'admin-reports', Reports: 'admin-reports' },
+    Freelancer: { Dashboard: 'dashboard-freelancer', 'Find Projects': 'freelancer-find-projects', 'My Profile': 'freelancer-profile', 'Submitted Offers': 'freelancer-proposals', Contracts: 'freelancer-contracts', 'Payments & Tasks': 'freelancer-payments-tasks', Disputes: 'freelancer-disputes', Messages: 'freelancer-messages', Settings: 'freelancer-settings', Support: 'freelancer-support' },
+    'Job Seeker': { Dashboard: 'dashboard-jobseeker', 'My CV': 'jobseeker-profile', 'Job Matches': 'jobseeker-opportunities', Applications: 'jobseeker-applications', Interviews: 'jobseeker-interviews', Offers: 'jobseeker-offers', Courses: 'jobseeker-training', Certificates: 'jobseeker-certificates', Settings: 'jobseeker-settings' },
+    'Company': { Dashboard: 'dashboard-company', 'Company Profile': 'company-profile', 'Post Opportunity': 'company-create-opportunity', Applicants: 'company-applications', 'Hire Talent': 'company-candidate-search', Interviews: 'company-interviews', Offers: 'company-offers', Tenders: 'company-tenders', 'Training Requests': 'company-training-requests', Reports: 'company-reports' },
+    'Individual Client': { Dashboard: 'dashboard-individual', 'Individual Profile': 'individual-profile', 'Post Request': 'individual-post-request', 'My Requests': 'individual-requests', Messages: 'individual-messages', 'Saved Talent': 'individual-saved-talent', Invoices: 'individual-invoices', Support: 'individual-support' },
+    Operator: { Dashboard: 'dashboard-operator', 'Opportunity Review': 'operator-opportunities', Applicants: 'operator-applicants', Interviews: 'operator-interviews', Training: 'operator-training', 'Support Cases': 'operator-support', Reports: 'operator-reports', Settings: 'operator-settings' },
+    'System Admin': { Dashboard: 'dashboard-admin', 'Website Content': 'admin-content', 'User Management': 'admin-users', 'Verification Center': 'admin-verification', Opportunities: 'admin-opportunities', 'Skills Management': 'admin-skills', 'Credential Management': 'admin-credentials', 'Interview Management': 'admin-interviews', 'Workflow Monitor': 'admin-workflows', Disputes: 'admin-disputes', Reports: 'admin-reports', 'System Settings': 'admin-config' },
   };
 
   const goToDashboardItem = (role, item) => {
@@ -2086,13 +2508,13 @@ export default function App() {
   const roleDashboardMeta = {
     Freelancer: {
       title: 'Freelancer Dashboard',
-      subtitle: 'Manage your profile, proposals, active projects, and service portfolio.',
-      sidebar: ['Dashboard', 'My Profile', 'Find Work', 'Proposals', 'Active Projects', 'Portfolio', 'Payments', 'Support'],
-      cards: [['Active Proposals', '8', '📨'], ['Completed Projects', '21', '✅'], ['Profile Views', '156', '👁️'], ['Pending Earnings', 'OMR 420', '💰']],
-      mainTitle: 'Recommended opportunities for you',
-      mainItems: [['Website redesign for SME', 'UI/UX · Remote · OMR 450 - 700', 'Apply'], ['Dashboard frontend support', 'React · Hybrid · OMR 600 - 900', 'View'], ['CCTV installation request', 'Networks · Onsite · OMR 180 - 320', 'Apply']],
-      quickTitle: 'Profile completion',
-      quickInfo: 'Complete skills, portfolio, and service packages to increase your visibility.',
+      subtitle: 'Manage project discovery, submitted offers, contracts, payments, disputes, messages, and profile visibility.',
+      sidebar: ['Dashboard', 'Find Projects', 'My Profile', 'Submitted Offers', 'Contracts', 'Payments & Tasks', 'Disputes', 'Messages', 'Settings', 'Support'],
+      cards: [['Profile Readiness', '82%', '⭐'], ['Matched Projects', '10', '📋'], ['Active Contracts', '2', '📄'], ['Pending Payments', 'OMR 223', '💰']],
+      mainTitle: 'Today’s freelancer actions',
+      mainItems: [['Complete portfolio and certificates', 'Improves visibility and matching score', 'Update'], ['Submit offer for dashboard project', 'Deadline: 2026-07-10 · High match', 'Submit'], ['Review pending task payment', 'OMR 123 · Awaiting client review', 'Open']],
+      quickTitle: 'Freelancer workspace',
+      quickInfo: 'A clearer freelancer journey: complete profile, discover matched projects, submit professional offers, sign contracts, deliver tasks, track payments, resolve disputes, and message clients.',
       accent: 'from-[#123b8b] to-[#10b3b7]',
     },
     'Job Seeker': {
@@ -2103,7 +2525,7 @@ export default function App() {
       mainTitle: 'Suggested job opportunities',
       mainItems: [['Junior IT Support Specialist', 'Muscat · Entry Level · Onsite', 'Coming Soon'], ['Data Analyst Graduate Opportunity', 'Sohar · Hybrid · Power BI', 'Coming Soon'], ['Technical Operations Coordinator', 'Muscat · Documentation · Coordination', 'Coming Soon']],
       quickTitle: 'Career profile status',
-      quickInfo: 'This module can stay marked as coming soon, while the dashboard shows the intended user journey clearly.',
+      quickInfo: 'Job seekers should feel guided from profile completion to matching, applications, interviews, offers, and training recommendations without leaving the career journey.',
       accent: 'from-[#0f4f9e] to-[#10b3b7]',
     },
     'Company': {
@@ -2131,35 +2553,77 @@ export default function App() {
     Operator: {
       title: 'Operator Dashboard',
       subtitle: 'Manage submitted opportunities, tender-related requests, training records, and applicant workflows.',
-      sidebar: ['Dashboard', 'Opportunities', 'Tenders', 'Training', 'Applicants', 'Evaluations', 'Reports', 'Settings'],
-      cards: [['Published Items', '18', '📣'], ['Active Programs', '4', '🎓'], ['Applicants', '320', '👥'], ['Reports', '11', '📊']],
-      mainTitle: 'Operator overview',
-      mainItems: [['TRA Cybersecurity Awareness Training', 'Open registration · Public', 'Manage'], ['Digital freelancing workshop', 'Nafadh program · Upcoming', 'View'], ['Tender publishing request', 'Pending approval', 'Review']],
-      quickTitle: 'Operations note',
-      quickInfo: 'Operator is an approved operational account. It is not the same as a public visitor account.',
+      sidebar: ['Dashboard', 'Opportunity Review', 'Applicants', 'Interviews', 'Training', 'Support Cases', 'Reports', 'Settings'],
+      cards: [['Submitted Reviews', '18', '📣'], ['Active Programs', '4', '🎓'], ['Applicant Queues', '320', '👥'], ['Open Cases', '7', '⚠️']],
+      mainTitle: 'Daily operation queue',
+      mainItems: [['Submitted opportunity needs review', 'Company post · Waiting operator check', 'Review'], ['Shortlisted candidates need interview slot', 'Data Analyst opportunity · 4 candidates', 'Schedule'], ['Training registration support case', 'User needs help with certificate upload', 'Open']],
+      quickTitle: 'Operator role boundary',
+      quickInfo: 'Operators manage daily platform workflows and support queues. They can review, monitor, and assist, but they should not control global system settings like a System Admin.',
       accent: 'from-[#082f74] to-[#10b3b7]',
     },
     'System Admin': {
       title: 'System Admin Dashboard',
       subtitle: 'Internal Nafadh/TRA administration area for managing system configuration, users, approvals, and reports.',
-      sidebar: ['Dashboard', 'System Admin', 'User Management', 'Skills Management', 'Credential Management', 'Interview Management', 'Project Monitoring', 'Payment Disputes', 'Reports'],
-      cards: [['System Users', '84', '👥'], ['Pending Approvals', '12', '⏳'], ['Active Modules', '7', '⚙️'], ['Reports', '11', '📊']],
-      mainTitle: 'Administration overview',
-      mainItems: [['System configuration', 'Allow user skill rating · Maintenance enabled', 'Edit'], ['Skills categories', 'Software · Data & AI · Networks', 'Manage'], ['Credential evaluations', '2 evaluations · 1 exam · 1 course', 'Review']],
+      sidebar: ['Dashboard', 'Website Content', 'User Management', 'Verification Center', 'Opportunities', 'Skills Management', 'Credential Management', 'Interview Management', 'Workflow Monitor', 'Disputes', 'Reports', 'System Settings'],
+      cards: [['Total Users', '184', '👥'], ['Pending Reviews', '12', '⏳'], ['Active Opportunities', '31', '📌'], ['Open Disputes', '3', '⚠️']],
+      mainTitle: 'Administration control center',
+      mainItems: [['User and company approvals', '12 accounts waiting verification or profile review', 'Review'], ['Opportunity publishing queue', '5 submitted opportunities need admin action', 'Open'], ['System configuration', 'Skills, dropdowns, matching thresholds, and modules', 'Manage']],
       quickTitle: 'Admin access note',
-      quickInfo: 'System Admin is login-only and should not appear in public registration. This follows the admin-style reference with a left sidebar and simple management tables.',
+      quickInfo: 'System Admin is login-only. It manages users, website content, configurations, approvals, opportunities, workflows, disputes, reports, and platform-wide settings.',
       accent: 'from-[#082f74] to-[#10b3b7]',
     },
   };
 
   const goToDashboard = (role = loginRole) => {
     setLoginRole(role);
-    setCurrentPage(rolePageMap[role] || 'dashboard-freelancer');
+    // If user was redirected from a login-required modal, go back to that page
+    if (redirectAfterLogin && redirectAfterLogin !== 'login') {
+      setCurrentPage(redirectAfterLogin);
+      setRedirectAfterLogin(null);
+    } else {
+      setCurrentPage(rolePageMap[role] || 'dashboard-freelancer');
+    }
     setIsServicesMenuOpen(false);
     setIsMobileMenuOpen(false);
     setIsLanguageMenuOpen(false);
     scrollToTop();
   };
+
+  const ExportMenu = () => (
+    <div className="relative" ref={exportMenuRef}>
+      <button
+        type="button"
+        onClick={() => setIsExportMenuOpen((open) => !open)}
+        className="flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-[#123b8b] shadow-sm transition hover:bg-[#eef7ff]"
+        aria-expanded={isExportMenuOpen}
+      >
+        <span className="text-base leading-none">⬇️</span>
+        <span>Export</span>
+        <span className={`text-[10px] transition ${isExportMenuOpen ? 'rotate-180' : ''}`}>⌄</span>
+      </button>
+
+      {isExportMenuOpen ? (
+        <div className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
+          <button
+            type="button"
+            onClick={() => setIsExportMenuOpen(false)}
+            className="flex w-full items-center gap-2 px-4 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-[#eef7ff] hover:text-[#123b8b]"
+          >
+            <span>📊</span>
+            <span>Export Excel</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsExportMenuOpen(false)}
+            className="flex w-full items-center gap-2 px-4 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-[#eef7ff] hover:text-[#123b8b]"
+          >
+            <span>📄</span>
+            <span>Export PDF</span>
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
 
   const renderUserDashboardPage = (role) => {
     const meta = roleDashboardMeta[role] || roleDashboardMeta.Freelancer;
@@ -2171,10 +2635,12 @@ export default function App() {
           <aside className="hidden w-[215px] shrink-0 bg-gradient-to-b from-[#053b91] via-[#0753a8] to-[#02aab5] text-white shadow-xl lg:flex lg:flex-col">
             <div className="px-5 py-7">
               <div className="mb-8 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-lg font-bold">N</div>
                 <div>
-                  <div className="text-lg font-bold leading-5">Nafadh</div>
-                  <div className="text-[11px] text-white/70">{role}</div>
+                  <img
+                    src={nafadhLogoWhite}
+                    alt="Nafadh"
+                    className="h-14 w-auto object-contain"
+                  />
                 </div>
               </div>
 
@@ -2191,28 +2657,81 @@ export default function App() {
                         active ? 'bg-white/16 text-white shadow-sm' : 'text-white/82 hover:bg-white/10 hover:text-white'
                       }`}
                     >
-                      <span className="w-5 text-center text-sm">{index === 0 ? '⌂' : '▹'}</span>
-                      <span>{item}</span>
+                      <span className="w-5 text-center text-sm">{index === 0 ? '⌂' : '•'}</span>
+                      <span className="flex-1">{item}</span>
+                      {index !== 0 ? <span className="text-[10px] text-white/60">›</span> : null}
                     </button>
                   );
                 })}
               </nav>
             </div>
 
-            <div className="mt-auto px-5 py-7">
-              <div className="mb-2 text-xs font-semibold text-white">Telecommunications Regulatory Authority</div>
-              <div className="text-[11px] leading-5 text-white/70">Prototype dashboard theme based on the shared Job Seeker/Admin reference.</div>
-            </div>
           </aside>
 
-          <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-8">
-            <div className="mb-5 flex items-center justify-between rounded-sm bg-white px-5 py-3 shadow-sm">
-              <div>
-                <div className="text-xs text-slate-500">Home / Dashboard</div>
-                <h1 className="mt-1 text-xl font-semibold text-slate-900">Welcome back, {isAdmin ? 'Administrator' : role}</h1>
+          {isMobileDashSidebarOpen ? (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div className="absolute inset-0 bg-black/40" onClick={() => setIsMobileDashSidebarOpen(false)} />
+              <aside className="absolute left-0 top-0 h-full w-[260px] bg-gradient-to-b from-[#053b91] via-[#0753a8] to-[#02aab5] text-white shadow-xl">
+                <div className="px-5 py-7">
+                  <div className="mb-4 flex items-center justify-between">
+                    <img src={nafadhLogoWhite} alt="Nafadh" className="h-12 w-auto object-contain" />
+                    <button type="button" onClick={() => setIsMobileDashSidebarOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-white">✕</button>
+                  </div>
+                  <nav className="space-y-1.5 text-[13px]">
+                    {meta.sidebar.map((item, index) => {
+                      const targetPage = dashboardNavigation[role]?.[item] || rolePageMap[role];
+                      const active = currentPage === targetPage || (index === 0 && currentPage === rolePageMap[role]);
+                      return (
+                        <button
+                          key={item}
+                          type="button"
+                          onClick={() => { goToDashboardItem(role, item); setIsMobileDashSidebarOpen(false); }}
+                          className={`flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-left transition ${
+                            active ? 'bg-white/16 text-white shadow-sm' : 'text-white/82 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          <span className="w-5 text-center text-sm">{index === 0 ? '⌂' : '•'}</span>
+                          <span className="flex-1">{item}</span>
+                        </button>
+                      );
+                    })}
+                  </nav>
+                  <div className="mt-6 border-t border-white/15 pt-4">
+                    <button type="button" onClick={() => { goToPage('home'); setIsMobileDashSidebarOpen(false); }} className="flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-left text-[13px] text-white/70 hover:bg-white/10 hover:text-white">
+                      <span className="w-5 text-center text-sm">←</span>
+                      <span>Back to Home</span>
+                    </button>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          ) : null}
+
+          <main className="min-w-0 flex-1 bg-[#eef2f7] px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
+            <div className="mx-auto w-full max-w-7xl">
+              <div className="mb-5 flex items-center justify-between rounded-xl bg-white px-5 py-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsMobileDashSidebarOpen((prev) => !prev)}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-[#123b8b] lg:hidden"
+                >
+                  ☰
+                </button>
+                <div>
+                  <div className="text-xs text-slate-500">Home / Dashboard</div>
+                  <h1 className="mt-1 text-xl font-semibold text-slate-900">Welcome back, {isAdmin ? 'Administrator' : role}</h1>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-50 text-slate-500 shadow-sm">🔔</button>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <ExportMenu />
+                <div className="relative" ref={notificationRef}>
+                  <button type="button" onClick={() => setIsNotificationOpen((prev) => !prev)} className="relative flex h-9 w-9 items-center justify-center rounded-full bg-slate-50 text-slate-500 shadow-sm">
+                    🔔
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#ef4444] text-[9px] font-bold text-white">2</span>
+                  </button>
+                  <NotificationDropdown isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} />
+                </div>
                 <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-50 text-slate-500 shadow-sm">⚙</button>
                 <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-50 text-slate-500 shadow-sm">👤</button>
               </div>
@@ -2220,20 +2739,54 @@ export default function App() {
 
             <section className="mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {meta.cards.map(([label, value, icon]) => (
-                <div key={label} className="rounded-sm border border-slate-100 bg-white p-4 shadow-sm">
+                <div key={String(label)} className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#eef7fb] text-lg">{icon}</div>
                     <div>
                       <div className="text-xs text-slate-500">{label}</div>
-                      <div className="text-2xl font-semibold text-[#123b8b]">{value}</div>
+                      <div className="text-2xl font-semibold text-[#123b8b]">{typeof value === 'string' && value.includes('OMR') ? <OmrText text={value} size={20} /> : value}</div>
                     </div>
                   </div>
                 </div>
               ))}
             </section>
 
+            <section className="mb-5 grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+              <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-base font-semibold text-slate-900">Activity Summary</h2>
+                    <p className="mt-1 text-xs text-slate-500">A quick overview of work volume across the last months.</p>
+                  </div>
+                  <span className="rounded-full bg-[#eefcff] px-3 py-1 text-xs font-semibold text-[#123b8b]">Prototype chart</span>
+                </div>
+                <div className="flex h-44 items-end gap-3 rounded-xl bg-slate-50 px-4 py-4">
+                  {[46, 72, 58, 88, 64, 96, 76, 68].map((height, index) => (
+                    <div key={index} className="flex flex-1 flex-col items-center gap-2">
+                      <div className="w-full rounded-t-lg bg-gradient-to-t from-[#123b8b] to-[#10b3b7]" style={{ height: `${height}%` }} />
+                      <span className="text-[10px] text-slate-400">M{index + 1}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+                <h2 className="text-base font-semibold text-slate-900">Recent Activity</h2>
+                <div className="mt-4 space-y-3 text-sm">
+                  {meta.mainItems.map(([title, desc, action], index) => (
+                    <div key={title} className="flex items-start justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3">
+                      <div>
+                        <div className="font-semibold text-slate-900">{title}</div>
+                        <div className="mt-1 text-xs text-slate-500">{typeof desc === 'string' && desc.includes('OMR') ? <OmrText text={desc} size={11} /> : desc}</div>
+                      </div>
+                      <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#123b8b] shadow-sm">{action}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
             <section className="grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
-              <div className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm">
+              <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
                   <div>
                     <h2 className="text-base font-semibold text-slate-900">{meta.mainTitle}</h2>
@@ -2261,7 +2814,7 @@ export default function App() {
                         <tr key={title} className="border-b border-slate-100 text-slate-700">
                           <td className="px-3 py-3">{index + 1}</td>
                           <td className="px-3 py-3 font-medium text-slate-900">{title}</td>
-                          <td className="px-3 py-3 text-slate-500">{desc}</td>
+                          <td className="px-3 py-3 text-slate-500">{typeof desc === 'string' && desc.includes('OMR') ? <OmrText text={desc} size={12} /> : desc}</td>
                           <td className="px-3 py-3"><span className="rounded bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">Active</span></td>
                           <td className="px-3 py-3"><button type="button" className="rounded border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700">{action}</button></td>
                         </tr>
@@ -2272,26 +2825,24 @@ export default function App() {
               </div>
 
               <div className="space-y-5">
-                <div className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
                   <h2 className="text-base font-semibold text-slate-900">{meta.quickTitle}</h2>
                   <p className="mt-3 text-sm leading-6 text-slate-600">{meta.quickInfo}</p>
                 </div>
 
-                <div className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
                   <h3 className="text-base font-semibold text-slate-900">Quick actions</h3>
                   <div className="mt-4 grid gap-2">
                     <button type="button" onClick={() => goToPage('work')} className="rounded border border-slate-200 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">Explore opportunities</button>
                     <button type="button" onClick={() => goToPage('hire')} className="rounded border border-slate-200 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">Browse talent</button>
                     <button type="button" onClick={() => goToPage('training')} className="rounded border border-slate-200 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">View training</button>
-                    <button type="button" onClick={() => goToPage('login')} className="rounded border border-slate-200 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">Switch user type</button>
+                    <button type="button" onClick={() => goToPage('login')} className="rounded border border-slate-200 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">Log out</button>
                   </div>
                 </div>
 
-                <div className="rounded-sm border border-slate-100 bg-white p-5 text-xs text-slate-500 shadow-sm">
-                  © 2026. All rights reserved.
-                </div>
               </div>
             </section>
+            </div>
           </main>
         </div>
       </div>
@@ -2299,11 +2850,12 @@ export default function App() {
   };
 
   function ModuleStat({ label, value, icon = '●' }) {
+    const displayValue = typeof value === 'string' && value.includes('OMR') ? <OmrText text={value} size={20} /> : value;
     return (
-      <div className="rounded-sm border border-slate-100 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#eef7fb] text-lg">{icon}</div>
-          <div><div className="text-xs text-slate-500">{label}</div><div className="text-2xl font-semibold text-[#123b8b]">{value}</div></div>
+          <div><div className="text-xs text-slate-500">{label}</div><div className="text-2xl font-semibold text-[#123b8b]">{displayValue}</div></div>
         </div>
       </div>
     );
@@ -2322,10 +2874,14 @@ export default function App() {
   }
 
   function SimpleTable({ headers, rows }) {
+    const renderCell = (cell) => {
+      if (typeof cell === 'string' && cell.includes('OMR')) return <OmrText text={cell} size={12} />;
+      return cell;
+    };
     return (
-      <section className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm">
+      <section className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
         <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3"><h2 className="text-base font-semibold text-slate-900">Records</h2><button className="rounded bg-[#02aab5] px-3 py-2 text-xs font-medium text-white">+ Add</button></div>
-        <div className="overflow-x-auto"><table className="w-full min-w-[700px] border-collapse text-left text-sm"><thead><tr className="border-b border-slate-100 bg-slate-50 text-xs text-slate-500">{headers.map(h => <th key={h} className="px-3 py-3 font-semibold">{h}</th>)}</tr></thead><tbody>{rows.map((row, i) => <tr key={i} className="border-b border-slate-100 text-slate-700">{row.map((cell, j) => <td key={`${i}-${j}`} className="px-3 py-3"><span className={j === row.length - 1 ? 'rounded border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700' : j === 0 ? 'font-medium text-slate-900' : ''}>{cell}</span></td>)}</tr>)}</tbody></table></div>
+        <div className="overflow-x-auto"><table className="w-full min-w-[700px] border-collapse text-left text-sm"><thead><tr className="border-b border-slate-100 bg-slate-50 text-xs text-slate-500">{headers.map(h => <th key={h} className="px-3 py-3 font-semibold">{h}</th>)}</tr></thead><tbody>{rows.map((row, i) => <tr key={i} className="border-b border-slate-100 text-slate-700">{row.map((cell, j) => <td key={`${i}-${j}`} className="px-3 py-3"><span className={j === row.length - 1 ? 'rounded border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700' : j === 0 ? 'font-medium text-slate-900' : ''}>{renderCell(cell)}</span></td>)}</tr>)}</tbody></table></div>
       </section>
     );
   }
@@ -2337,21 +2893,27 @@ export default function App() {
         <div className="flex min-h-screen">
           <aside className="hidden w-[215px] shrink-0 bg-gradient-to-b from-[#053b91] via-[#0753a8] to-[#02aab5] text-white shadow-xl lg:flex lg:flex-col">
             <div className="px-5 py-7">
-              <div className="mb-8 flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-lg font-bold">N</div><div><div className="text-lg font-bold leading-5">Nafadh</div><div className="text-[11px] text-white/70">{role}</div></div></div>
+              <div className="mb-8 flex items-center gap-3">
+                  <img
+                    src={nafadhLogoWhite}
+                    alt="Nafadh"
+                    className="h-14 w-auto object-contain"
+                  />
+                </div>
               <nav className="space-y-1.5 text-[13px]">
                 {meta.sidebar.map((item, index) => {
                   const targetPage = dashboardNavigation[role]?.[item] || rolePageMap[role];
                   const active = currentPage === targetPage || (index === 0 && currentPage === rolePageMap[role]);
-                  return <button key={item} type="button" onClick={() => goToDashboardItem(role, item)} className={`flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-left transition ${active ? 'bg-white/16 text-white shadow-sm' : 'text-white/82 hover:bg-white/10 hover:text-white'}`}><span className="w-5 text-center text-sm">{index === 0 ? '⌂' : '▹'}</span><span>{item}</span></button>;
+                  return <button key={item} type="button" onClick={() => goToDashboardItem(role, item)} className={`flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-left transition ${active ? 'bg-white/16 text-white shadow-sm' : 'text-white/82 hover:bg-white/10 hover:text-white'}`}><span className="w-5 text-center text-sm">{index === 0 ? '⌂' : '•'}</span><span className="flex-1">{item}</span>{index !== 0 ? <span className="text-[10px] text-white/60">›</span> : null}</button>;
                 })}
               </nav>
             </div>
-            <div className="mt-auto px-5 py-7"><div className="mb-2 text-xs font-semibold text-white">Telecommunications Regulatory Authority</div><div className="text-[11px] leading-5 text-white/70">Simple dashboard theme based on the shared Job Seeker/Admin reference.</div></div>
           </aside>
-          <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-8">
-            <div className="mb-5 flex items-center justify-between rounded-sm bg-white px-5 py-3 shadow-sm"><div><div className="text-xs text-slate-500">Home / {role}</div><h1 className="mt-1 text-xl font-semibold text-slate-900">{title}</h1><p className="mt-1 text-xs text-slate-500">{subtitle}</p></div><div className="flex items-center gap-2"><button type="button" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-50 text-slate-500 shadow-sm">🔔</button><button type="button" onClick={() => goToPage('login')} className="rounded bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700">Switch user</button></div></div>
+          <main className="min-w-0 flex-1 bg-[#eef2f7] px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
+            <div className="mx-auto w-full max-w-7xl">
+              <div className="mb-5 flex items-center justify-between rounded-xl bg-white px-5 py-4 shadow-sm"><div className="flex items-center gap-3"><button type="button" onClick={() => setIsMobileDashSidebarOpen((p) => !p)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-[#123b8b] lg:hidden">☰</button><div><div className="text-xs text-slate-500">Home / {role}</div><h1 className="mt-1 text-xl font-semibold text-slate-900">{title}</h1><p className="mt-1 text-xs text-slate-500">{subtitle}</p></div></div><div className="flex flex-wrap items-center justify-end gap-2"><ExportMenu /><div className="relative" ref={notificationRef}><button type="button" onClick={() => setIsNotificationOpen((p) => !p)} className="relative flex h-9 w-9 items-center justify-center rounded-full bg-slate-50 text-slate-500 shadow-sm">🔔<span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#ef4444] text-[9px] font-bold text-white">2</span></button><NotificationDropdown isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} /></div><button type="button" onClick={() => goToPage('login')} className="rounded bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700">Log out</button></div></div>
             {children}
-            <div className="mt-8 rounded-sm border border-slate-100 bg-white p-4 text-center text-xs text-slate-500 shadow-sm">© 2026. All rights reserved.</div>
+            </div>
           </main>
         </div>
       </div>
@@ -2367,134 +2929,547 @@ export default function App() {
     ['CCTV Site Visit', 'Networks', 'OMR 35', 'Draft'],
   ];
 
-  const freelancerProposals = [
-    ['Website redesign for SME', 'Submitted', 'OMR 650', '82% match', 'View'],
-    ['Dashboard frontend support', 'Under Review', 'OMR 900', '91% match', 'Follow up'],
-    ['Network and CCTV setup', 'Invited', 'OMR 280', '76% match', 'Respond'],
+  const freelancerProjectsDirectory = [
+    ['Centralized Reporting & Analytics Dashboard for Nafadh', 'Global Company', 'Skills-based selection', 'OMR 569,214', '2026-07-10', 'Saved'],
+    ['New company account project', 'Global Company', 'Open project', 'OMR 800', '2025-09-20', 'Submitted'],
+    ['Website content update and UI polish', 'Omani SME', 'Remote', 'OMR 450', '2026-05-16', 'Open'],
   ];
 
-  const freelancerProjects = [
-    ['Nafadh UI polish', 'In Progress', '2 weeks left', 'OMR 450', 'Update'],
-    ['Business website setup', 'Waiting client review', '4 days left', 'OMR 320', 'Open'],
-    ['CCTV installation request', 'Completed', 'Closed', 'OMR 190', 'Invoice'],
+  const freelancerProposals = [
+    ['New company account project', 'Global Company', '2025-09-14', 'Submitted', 'View'],
+    ['Test 14 Sep', 'Global Company', '2025-09-14', 'Approved', 'View'],
+    ['Centralized Reporting & Analytics Dashboard for Nafadh', 'Global Company', '2025-09-22', 'Under Evaluation', 'View'],
+    ['Website content update and UI polish', 'Omani SME', '2026-04-27', 'Pending Review', 'Follow up'],
   ];
+
+  const freelancerContracts = [
+    ['Centralized Reporting & Analytics Dashboard for Nafadh', 'Global Company', 'Skills-based selection', '2025-09-22', '2026-12-22', 'Signed'],
+    ['New company account project', 'Global Company', 'Skills-based selection', '2025-09-15', '2025-09-20', 'Signed'],
+  ];
+
+  const freelancerPaymentsTasks = [
+    ['m1', 'Freelancer Name', '2025-09-20', 'OMR 123', 'Awaiting Review', 'View'],
+    ['Centralized reporting module integrated with Nafadh - 1', 'Freelancer Name', '2025-11-22', 'OMR 100', 'Approved', 'View'],
+    ['Interactive dashboards for freelancers, clients, and admins - 2', 'Freelancer Name', '2025-12-22', 'OMR 70', 'Approved', 'View'],
+    ['Interactive dashboards for freelancers, clients, and admins - 3', 'Freelancer Name', '2026-01-22', 'OMR 200', 'Approved', 'View'],
+  ];
+
+  const freelancerDisputes = [
+    ['Freelancer Name', 'Centralized Reporting & Analytics Dashboard for Nafadh', 'Task 1', 'Reason 2', '2025-11-30', 'Awaiting Response'],
+  ];
+
+  const renderFreelancerFindProjectsPage = () => (
+    <DashboardShell role="Freelancer" title="Find Projects" subtitle="Discover suitable projects, check readiness, save opportunities, and submit offers with confidence.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4">
+        <ModuleStat label="Recommended Matches" value="10" icon="🎯" />
+        <ModuleStat label="Saved Projects" value="3" icon="🔖" />
+        <ModuleStat label="Closing Soon" value="2" icon="⏰" />
+        <ModuleStat label="Offer Readiness" value="82%" icon="⭐" />
+      </section>
+
+      <section className="mb-5 rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="mb-4 rounded bg-gradient-to-r from-[#123b8b] to-[#02aab5] px-4 py-3 text-sm font-semibold text-white">Project Search & Filters</div>
+        <div className="grid gap-3 md:grid-cols-6">
+          <MiniSelect label="Project Type" options={['All', 'Open project', 'Skills-based selection', 'Invitation']} />
+          <MiniSelect label="Service Area" options={['All', 'Development', 'Design', 'Data', 'Networks']} />
+          <MiniField label="Project Value" placeholder="0 - 9,999,999" />
+          <MiniSelect label="Experience Level" options={['All', 'Junior', 'Intermediate', 'Senior']} />
+          <MiniSelect label="Submission Type" options={['All', 'Direct', 'Skills Test', 'By Invitation']} />
+          <MiniField label="Last Submission Date" type="date" />
+        </div>
+      </section>
+
+      <section className="mb-5 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold text-slate-500">Global Company · High Match</p>
+              <h2 className="mt-2 text-lg font-semibold text-slate-900">Centralized Reporting & Analytics Dashboard for Nafadh</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-500">Build a reporting dashboard with role-based access, analytics, downloadable reports, and consolidated data from projects, users, tasks, and payments.</p>
+            </div>
+            <Tag tone="blue">Saved</Tag>
+          </div>
+          <div className="grid gap-4 border-t border-slate-100 pt-4 text-sm md:grid-cols-4">
+            <div><div className="text-xs text-slate-500">Project Value</div><div className="font-semibold text-[#123b8b]">OMR 569,214</div></div>
+            <div><div className="text-xs text-slate-500">Work Mode</div><div className="font-semibold text-slate-800">Remote</div></div>
+            <div><div className="text-xs text-slate-500">Deadline</div><div className="font-semibold text-slate-800">2026-07-10</div></div>
+            <div><div className="text-xs text-slate-500">Match Score</div><div className="font-semibold text-emerald-600">91%</div></div>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2"><Tag tone="cyan">Dashboard</Tag><Tag tone="blue">React</Tag><Tag tone="green">Analytics</Tag><Tag tone="amber">Role-Based Access</Tag></div>
+          <div className="mt-5 rounded bg-slate-50 p-4">
+            <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-600"><span>Submission readiness</span><span className="text-[#123b8b]">82%</span></div>
+            <ProgressBar value={82} />
+            <p className="mt-2 text-xs text-slate-500">Add one related portfolio sample and verify certificates to increase your offer strength.</p>
+          </div>
+          <div className="mt-5 flex flex-wrap justify-end gap-2"><button className="rounded border border-slate-200 px-4 py-2 text-sm">View Details</button><button className="rounded border border-[#02aab5] px-4 py-2 text-sm text-[#02aab5]">Save</button><button className="rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Start Offer</button></div>
+        </div>
+
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900">Before You Apply</h2>
+          <div className="mt-4 space-y-3 text-sm">
+            {[['Profile is complete enough', true], ['Relevant service package exists', true], ['Portfolio sample attached', false], ['Bank account ready', true], ['No unresolved disputes', true]].map(([label, done]) => <div key={String(label)} className="flex items-center justify-between rounded bg-slate-50 px-3 py-2"><span>{label}</span><span className={done ? 'text-emerald-600' : 'text-amber-600'}>{done ? '✓ Ready' : 'Needs update'}</span></div>)}
+          </div>
+        </div>
+      </section>
+
+      <SimpleTable headers={['Project', 'Company', 'Type', 'Value', 'Deadline', 'Status']} rows={freelancerProjectsDirectory} />
+    </DashboardShell>
+  );
 
   const renderFreelancerProfilePage = () => (
-    <DashboardShell role="Freelancer" title="Freelancer Profile" subtitle="A public profile that shows services, skills, experience, portfolio, and availability.">
+    <DashboardShell role="Freelancer" title="Personal Profile" subtitle="Manage public freelancer information, services, skills, certificates, portfolio, reviews, and profile readiness.">
       <section className="mb-5 grid gap-4 md:grid-cols-4">
-        <ModuleStat label="Profile Strength" value="84%" icon="⭐" />
-        <ModuleStat label="Published Services" value="3" icon="💼" />
-        <ModuleStat label="Portfolio Items" value="6" icon="🖼️" />
-        <ModuleStat label="Client Rating" value="4.8" icon="🏅" />
+        <ModuleStat label="Profile Completion" value="82%" icon="⭐" />
+        <ModuleStat label="Active Services" value="2" icon="🧰" />
+        <ModuleStat label="Portfolio Samples" value="4" icon="🖼️" />
+        <ModuleStat label="Average Rating" value="4.8" icon="💬" />
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#eef7fb] text-3xl">👩‍💻</div>
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Freelancer Name</h2>
-              <p className="text-sm text-slate-500">Full Stack Developer · UI/UX Designer · QA Tester</p>
-            </div>
-          </div>
-          <div className="grid gap-3">
-            <MiniField label="Professional Title" placeholder="e.g. Full Stack Developer" />
-            <MiniSelect label="Primary Category" options={['Design', 'Development', 'Testing', 'Networks', 'Marketing']} />
-            <MiniSelect label="Availability" options={['Available now', 'Available part-time', 'Busy', 'Open for invitations']} />
-            <MiniField label="Hourly Rate" placeholder="OMR / hour" />
-          </div>
+      <section className="mb-5 grid gap-5 xl:grid-cols-[0.72fr_1.28fr]">
+        <div className="rounded-sm border border-slate-100 bg-white p-5 text-center shadow-sm">
+          <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-[#eef7fb] text-5xl">👨‍💻</div>
+          <button className="mt-4 rounded bg-[#02aab5] px-4 py-2 text-xs font-semibold text-white">Upload Photo</button>
+          <div className="mt-5 grid gap-3 text-left"><MiniField label="Full Name" placeholder="Freelancer Name" /><MiniField label="Phone" placeholder="95110510" /><MiniSelect label="Governorate" options={['Muscat', 'Al Batinah North', 'Al Dhahirah', 'Al Dakhiliyah']} /><MiniSelect label="Availability" options={['Available for projects', 'Searching', 'Busy', 'Not visible']} /></div>
+          <div className="mt-5 rounded bg-blue-50 p-4 text-left text-xs text-[#123b8b]"><strong>Visibility tip:</strong> clients should see your strongest service, response time, verified skills, and recent work samples first.</div>
         </div>
 
-        <div className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">Profile Overview</h2>
-          <textarea rows={6} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Write a short professional overview for clients." />
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            <MiniSelect label="Skill 1" options={['Figma', 'React', 'ASP.NET', 'Laravel', 'Testing']} />
-            <MiniSelect label="Skill 2" options={['Figma', 'React', 'ASP.NET', 'Laravel', 'Testing']} />
-            <MiniSelect label="Skill 3" options={['Figma', 'React', 'ASP.NET', 'Laravel', 'Testing']} />
-          </div>
-          <div className="mt-4 flex justify-end"><button className="rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Save Profile</button></div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div className="mb-5 flex flex-wrap gap-2">{['General Details', 'Services', 'Skills', 'Portfolio', 'Certificates', 'Reviews & Ratings'].map((tab, index) => <button key={tab} className={index === 0 ? 'rounded border px-3 py-2 text-xs font-semibold border-[#123b8b] bg-blue-50 text-[#123b8b]' : 'rounded border px-3 py-2 text-xs font-semibold border-slate-200 text-slate-600'}>{tab}</button>)}</div>
+          <div className="grid gap-4 md:grid-cols-2"><MiniField label="Civil ID" placeholder="114623176" /><MiniField label="Email" placeholder="freelancer@email.com" /><MiniField label="Website / Portfolio URL" placeholder="Enter URL" /><MiniSelect label="District / Wilayat" options={['Suhar', 'Muscat', 'Ibri', 'Nizwa']} /></div>
+          <label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Professional Overview</div><textarea rows={6} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Briefly explain what you do, your strongest services, expected deliverables, tools, and work style." /></label>
+          <div className="mt-4 grid gap-4 md:grid-cols-3"><MiniSelect label="Main Service" options={['Development', 'Design', 'Testing', 'Data Analysis']} /><MiniSelect label="Top Skill" options={['React', 'Figma', 'ASP.NET', 'Power BI']} /><MiniSelect label="Experience" options={['0-1 years', '2-4 years', '5+ years']} /></div>
+          <div className="mt-5 flex justify-end"><button className="rounded bg-[#123b8b] px-4 py-2 text-sm text-white">Save and Continue</button></div>
         </div>
       </section>
 
-      <section className="mt-5 grid gap-5 xl:grid-cols-2">
+      <section className="mb-5 grid gap-5 xl:grid-cols-2">
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900">Profile Completion Checklist</h2>
+          <div className="mt-4 space-y-3 text-sm">{[['Basic information completed', true], ['At least 2 services added', true], ['Portfolio samples added', true], ['Certificates uploaded', false], ['Bank account verified', true], ['Response preferences selected', false]].map(([label, done]) => <div key={String(label)} className="flex items-center justify-between rounded bg-slate-50 px-3 py-2"><span>{label}</span><span className={done ? 'text-emerald-600' : 'text-amber-600'}>{done ? '✓ Done' : 'Pending'}</span></div>)}</div>
+        </div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900">Profile Strength</h2>
+          <div className="mt-4 space-y-4 text-sm">{[['Basic information',100],['Services added',85],['Portfolio samples',75],['Certificates verified',55]].map(([label,value]) => <div key={String(label)}><div className="mb-1 flex justify-between"><span>{label}</span><span className="font-semibold text-[#123b8b]">{value}%</span></div><ProgressBar value={value} /></div>)}</div>
+        </div>
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-2">
         <SimpleTable headers={['Service', 'Category', 'Price', 'Status', 'Actions']} rows={freelancerServices.map(r => [...r, 'Edit'])} />
-        <div className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">Visibility Checklist</h2>
-          <div className="mt-4 space-y-4 text-sm">
-            {[[ 'Complete basic profile', 100 ], [ 'Add at least 3 services', 85 ], [ 'Add portfolio samples', 70 ], [ 'Verify contact information', 90 ]].map(([label, value]) => <div key={label}><div className="mb-1 flex justify-between"><span>{label}</span><span className="font-semibold text-[#123b8b]">{value}%</span></div><ProgressBar value={value} /></div>)}
-          </div>
-        </div>
+        <SimpleTable headers={['Portfolio Item', 'Type', 'Related Skill', 'Visibility', 'Actions']} rows={[[ 'Nafadh UI Prototype', 'Web App', 'React / UX', 'Public', 'Edit'], ['Power BI Student Dashboard', 'Data', 'Power BI', 'Public', 'Edit'], ['Website QA Report', 'Testing', 'QA', 'Private', 'Edit']]} />
       </section>
     </DashboardShell>
   );
 
   const renderFreelancerProposalsPage = () => (
-    <DashboardShell role="Freelancer" title="My Proposals" subtitle="Track submitted proposals, invitations, client responses, and proposal status.">
-      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Submitted" value="8" icon="📨" /><ModuleStat label="Under Review" value="3" icon="⏳" /><ModuleStat label="Invitations" value="2" icon="⭐" /><ModuleStat label="Accepted" value="1" icon="✅" /></section>
-      <section className="mb-5 rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-3 md:grid-cols-4"><MiniField label="Keyword" placeholder="Search proposals" /><MiniSelect label="Status" options={['All', 'Submitted', 'Under Review', 'Invited', 'Accepted', 'Rejected']} /><MiniSelect label="Category" options={['All', 'Design', 'Development', 'Networks', 'Writing']} /><MiniSelect label="Sort" options={['Newest', 'Highest Budget', 'Closest Deadline']} /></div></section>
-      <SimpleTable headers={['Opportunity', 'Status', 'Proposed Amount', 'Match', 'Actions']} rows={freelancerProposals} />
-    </DashboardShell>
-  );
-
-  const renderFreelancerProjectsPage = () => (
-    <DashboardShell role="Freelancer" title="Active Projects" subtitle="Manage ongoing work, milestones, delivery status, and client review.">
-      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Active Projects" value="3" icon="💼" /><ModuleStat label="Pending Review" value="1" icon="👁️" /><ModuleStat label="Completed" value="21" icon="✅" /><ModuleStat label="Disputes" value="0" icon="🛡️" /></section>
-      <SimpleTable headers={['Project', 'Status', 'Timeline', 'Value', 'Actions']} rows={freelancerProjects} />
-      <section className="mt-5 grid gap-5 md:grid-cols-3">{['Requirements confirmed', 'Work in progress', 'Submit for review'].map((step, index) => <div key={step} className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-2 text-xs text-slate-500">Milestone {index + 1}</div><div className="font-semibold text-slate-900">{step}</div><p className="mt-2 text-sm text-slate-500">Prototype stage for tracking project delivery.</p></div>)}</section>
-    </DashboardShell>
-  );
-
-  const renderFreelancerPortfolioPage = () => (
-    <DashboardShell role="Freelancer" title="Portfolio" subtitle="Showcase completed work samples linked to skills and service categories.">
-      <section className="mb-5 rounded-sm border border-slate-100 bg-white p-5 shadow-sm">
-        <div className="grid gap-4 md:grid-cols-3"><MiniField label="Project Name" /><MiniField label="Project URL" placeholder="https://" /><MiniSelect label="Category" options={['Design', 'Development', 'Data', 'Networks', 'Marketing']} /></div>
-        <div className="mt-4 grid gap-4 md:grid-cols-2"><MiniSelect label="Tech Stack Used" options={['React', 'Figma', 'ASP.NET', 'Laravel', 'Power BI']} /><MiniSelect label="Skills Demonstrated" options={['UI Design', 'Frontend', 'Testing', 'Problem Solving']} /></div>
-        <label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Description</div><textarea rows={4} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Describe your role and impact." /></label>
-        <div className="mt-4 flex justify-end"><button className="rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Add Portfolio Item</button></div>
+    <DashboardShell role="Freelancer" title="Submitted Offers" subtitle="Track submitted offers, draft new proposals, and improve evaluation readiness.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="All Offers" value="5" icon="📨" /><ModuleStat label="Under Evaluation" value="1" icon="⏳" /><ModuleStat label="Approved" value="1" icon="✅" /><ModuleStat label="Draft Offers" value="2" icon="✍️" /></section>
+      <section className="mb-5 grid gap-5 xl:grid-cols-[0.8fr_1.2fr]">
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Offer Builder</h2><div className="grid gap-4"><MiniField label="Proposed Timeline" placeholder="Example: 6 weeks" /><MiniField label="Proposed Value" placeholder="OMR" /><MiniSelect label="Delivery Method" options={['Milestones', 'One final delivery', 'Monthly tasks']} /><MiniSelect label="Attachments" options={['CV', 'Portfolio', 'Technical Proposal', 'No attachment']} /></div><label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Cover Letter</div><textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Explain why you are suitable, similar work, and delivery plan." /></label><button className="mt-4 rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Save Draft Offer</button></div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Evaluation Signals</h2><div className="grid gap-3 md:grid-cols-2">{[['Skills match', 91], ['Portfolio relevance', 76], ['Delivery clarity', 84], ['Certificates', 55]].map(([label, value]) => <div key={String(label)} className="rounded bg-slate-50 p-4"><div className="mb-2 flex justify-between text-sm"><span>{label}</span><span className="font-semibold text-[#123b8b]">{value}%</span></div><ProgressBar value={value} /></div>)}</div></div>
       </section>
-      <section className="grid gap-5 md:grid-cols-3">{['Nafadh homepage prototype', 'Business dashboard UI', 'Booking system frontend'].map((title, index) => <div key={title} className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-4 flex h-28 items-center justify-center rounded bg-[#eef7fb] text-4xl">{['🖥️','📊','📱'][index]}</div><h3 className="font-semibold text-[#123b8b]">{title}</h3><p className="mt-2 text-sm text-slate-500">Sample portfolio card for the freelancer public profile.</p><div className="mt-4 flex gap-2"><Tag tone="cyan">React</Tag><Tag tone="blue">UI</Tag></div></div>)}</section>
+      <section className="mb-5 rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-3 md:grid-cols-4"><MiniField label="Search" placeholder="Search offer title" /><MiniSelect label="Status" options={['All', 'Draft', 'Submitted', 'Under Evaluation', 'Approved', 'Pending Review']} /><MiniSelect label="Project Type" options={['All', 'Open', 'Skills-based selection']} /><MiniSelect label="Sort" options={['Newest', 'Oldest', 'Status']} /></div></section>
+      <SimpleTable headers={['Project Title', 'Client', 'Submission Date', 'Status', 'Action']} rows={freelancerProposals} />
     </DashboardShell>
   );
 
-  const renderFreelancerPaymentsPage = () => (
-    <DashboardShell role="Freelancer" title="Payments" subtitle="Track earnings, invoices, pending payments, and completed transactions.">
-      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Pending Earnings" value="OMR 420" icon="💰" /><ModuleStat label="Paid This Month" value="OMR 780" icon="✅" /><ModuleStat label="Invoices" value="6" icon="🧾" /><ModuleStat label="Disputes" value="0" icon="🛡️" /></section>
-      <SimpleTable headers={['Invoice', 'Client', 'Amount', 'Status', 'Actions']} rows={[[ 'INV-2026-001', 'SME Company', 'OMR 320', 'Paid', 'View'], ['INV-2026-002', 'Individual Client', 'OMR 180', 'Pending', 'Reminder'], ['INV-2026-003', 'Telecom Partner', 'OMR 420', 'Processing', 'View']]} />
+  const renderFreelancerContractsPage = () => (
+    <DashboardShell role="Freelancer" title="Contracts" subtitle="View signed contracts, milestones, obligations, documents, and project agreement details.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Signed Contracts" value="2" icon="📄" /><ModuleStat label="Active" value="1" icon="⏳" /><ModuleStat label="Completed" value="1" icon="✅" /><ModuleStat label="Next Milestone" value="7 days" icon="🔔" /></section>
+      <section className="mb-5 grid gap-5 xl:grid-cols-[1.1fr_0.9fr]"><SimpleTable headers={['Project Title', 'Client', 'Submission Type', 'Project Date', 'End Date', 'Status']} rows={freelancerContracts} /><div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="font-semibold text-slate-900">Milestone Timeline</h2><div className="mt-4 space-y-3 text-sm">{[['Contract signed', 'Completed'], ['Initial requirements confirmed', 'Completed'], ['Dashboard prototype delivery', 'In progress'], ['Client review and payment release', 'Upcoming']].map(([item, status]) => <div key={item} className="flex items-center justify-between rounded bg-slate-50 px-3 py-2"><span>{item}</span><Tag tone={status === 'Completed' ? 'green' : status === 'In progress' ? 'cyan' : 'amber'}>{status}</Tag></div>)}</div></div></section>
     </DashboardShell>
   );
 
+  const renderFreelancerPaymentsTasksPage = () => (
+    <DashboardShell role="Freelancer" title="Payments & Tasks" subtitle="Track tasks, delivery dates, values, payment approvals, withdrawal readiness, and bank settings.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Total Balance" value="OMR 493" icon="💰" /><ModuleStat label="Awaiting Review" value="OMR 123" icon="⏳" /><ModuleStat label="Approved Tasks" value="3" icon="✅" /><ModuleStat label="Bank Account" value="Ready" icon="🏦" /></section>
+      <section className="mb-5 grid gap-5 xl:grid-cols-[0.8fr_1.2fr]"><div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Withdraw Funds</h2><div className="grid gap-4"><MiniField label="Available Amount" placeholder="OMR 370" /><MiniSelect label="Bank Account" options={['Bank Muscat **** 2140', 'Add new bank account']} /><MiniSelect label="Withdrawal Type" options={['Normal transfer', 'Urgent review']} /></div><button className="mt-4 rounded bg-[#123b8b] px-4 py-2 text-sm text-white">Request Withdrawal</button></div><div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Task Delivery Checklist</h2><div className="grid gap-3 md:grid-cols-2">{[['Upload deliverables', true], ['Add delivery notes', true], ['Client review pending', false], ['Payment release pending', false]].map(([label, done]) => <div key={String(label)} className="rounded bg-slate-50 p-3 text-sm"><span className={done ? 'text-emerald-600' : 'text-amber-600'}>{done ? '✓' : '•'}</span> {label}</div>)}</div></div></section>
+      <section className="mb-5 rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="flex flex-wrap gap-2"><Tag tone="blue">Payments</Tag><Tag tone="cyan">Tasks</Tag><Tag tone="green">Bank Account Settings</Tag><Tag tone="amber">Withdrawal Requests</Tag></div></section>
+      <SimpleTable headers={['Task Name', 'Freelancer', 'Last Submission', 'Value', 'Status', 'Action']} rows={freelancerPaymentsTasks} />
+    </DashboardShell>
+  );
+
+  const renderFreelancerDisputesPage = () => (
+    <DashboardShell role="Freelancer" title="Disputes" subtitle="Follow payment or task disputes, add evidence, and track response status.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Open Disputes" value="1" icon="⚠️" /><ModuleStat label="Awaiting Response" value="1" icon="⏳" /><ModuleStat label="Resolved" value="0" icon="✅" /><ModuleStat label="Avg. Response" value="2 days" icon="🕒" /></section>
+      <section className="mb-5 rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Create Dispute / Clarification</h2><div className="grid gap-4 md:grid-cols-4"><MiniSelect label="Related Project" options={['Centralized Reporting Dashboard', 'New company account project']} /><MiniSelect label="Dispute Type" options={['Payment delay', 'Scope change', 'Task rejection', 'Other']} /><MiniSelect label="Priority" options={['Normal', 'High', 'Urgent']} /><MiniSelect label="Evidence" options={['Deliverable file', 'Chat message', 'Contract clause']} /></div><label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Explanation</div><textarea rows={4} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Write a clear explanation and attach evidence before submission." /></label><button className="mt-4 rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Submit for Review</button></section>
+      <SimpleTable headers={['Freelancer', 'Project', 'Task', 'Reason', 'Submission Date', 'Status']} rows={freelancerDisputes} />
+    </DashboardShell>
+  );
+
+  const renderFreelancerMessagesPage = () => (
+    <DashboardShell role="Freelancer" title="Messages" subtitle="Direct messages between freelancer, client, and support with project context.">
+      <section className="grid gap-5 xl:grid-cols-[1.3fr_0.7fr]">
+        <div className="rounded-sm border border-slate-100 bg-white shadow-sm"><div className="flex items-center justify-between border-b border-slate-100 p-5"><div><h2 className="font-semibold text-slate-900">Global Company</h2><p className="text-xs text-slate-500">Related project: Centralized Reporting Dashboard · Last message 12:48 PM</p></div><Tag tone="green">Client</Tag></div><div className="min-h-[360px] space-y-5 p-5 text-sm"><div className="mx-auto w-fit rounded bg-slate-50 px-3 py-1 text-xs text-slate-500">Sep 14, 2025</div><div className="max-w-sm rounded-2xl bg-blue-50 p-3 text-slate-700">Hello, we reviewed your offer and need one clarification about milestones.</div><div className="ml-auto max-w-sm rounded-2xl bg-[#123b8b] p-3 text-white">Welcome, please share the required clarification and I will update the proposal.</div><div className="max-w-sm rounded-2xl bg-blue-50 p-3 text-slate-700">Can you split the dashboard into prototype, reports, and admin review milestones?</div></div><div className="flex items-center gap-2 border-t border-slate-100 p-4"><button className="rounded bg-slate-100 px-3 py-2">📎</button><input className="flex-1 rounded border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Write a message" /><button className="rounded bg-[#02aab5] px-4 py-2 text-white">➤</button></div></div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><MiniField label="Search" placeholder="Search messages" /><div className="mt-4 space-y-3"><div className="rounded bg-slate-50 p-4"><div className="font-semibold text-[#123b8b]">Global Company</div><div className="text-xs text-slate-500">9/14/2025 · 12:48 PM</div><p className="mt-2 text-sm text-slate-600">1 new project clarification</p></div><div className="rounded bg-slate-50 p-4"><div className="font-semibold text-[#123b8b]">Nafadh Support</div><div className="text-xs text-slate-500">Yesterday</div><p className="mt-2 text-sm text-slate-600">Payment review update</p></div></div></div>
+      </section>
+    </DashboardShell>
+  );
+
+  const renderFreelancerSettingsPage = () => (
+    <DashboardShell role="Freelancer" title="Settings" subtitle="Manage notification preferences, visibility, account security, and work preferences.">
+      <section className="grid gap-5 xl:grid-cols-2">
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Account & Visibility</h2><div className="grid gap-4"><MiniSelect label="Profile Visibility" options={['Public', 'Visible to logged-in clients', 'Private']} /><MiniSelect label="Language" options={['Arabic', 'English']} /><MiniSelect label="Notification Channel" options={['Email', 'SMS', 'Platform only']} /><MiniSelect label="Project Invitations" options={['Allow all verified clients', 'Only matched projects', 'Pause invitations']} /></div></div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Work Preferences</h2><div className="grid gap-4"><MiniSelect label="Preferred Work Mode" options={['Remote', 'Hybrid', 'On-site']} /><MiniSelect label="Minimum Project Value" options={['Any', 'OMR 50+', 'OMR 200+', 'OMR 500+']} /><MiniSelect label="Weekly Availability" options={['Less than 10 hours', '10-20 hours', '20-40 hours', 'Full-time freelance']} /><MiniSelect label="Auto-save matching projects" options={['Enabled', 'Disabled']} /></div></div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Security</h2><div className="grid gap-4"><MiniField label="Current Password" type="password" /><MiniField label="New Password" type="password" /><MiniField label="Confirm New Password" type="password" /></div><button className="mt-5 rounded bg-[#123b8b] px-4 py-2 text-sm text-white">Save Security Settings</button></div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Notifications</h2><div className="space-y-3 text-sm">{['New project matches', 'Client messages', 'Offer status updates', 'Payment release updates', 'Dispute responses'].map((item) => <div key={item} className="flex items-center justify-between rounded bg-slate-50 px-3 py-2"><span>{item}</span><Tag tone="green">On</Tag></div>)}</div></div>
+      </section>
+    </DashboardShell>
+  );
 
   const renderJobSeekerProfilePage = () => {
-    const tabs = ['Education', 'Experience', 'Projects', 'Certificates', 'Trainings', 'Derived Skills'];
-    return <DashboardShell role="Job Seeker" title="Profile Completion" subtitle="Build a structured skill-based profile used for matching and nominations.">
-      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Profile Completion" value="78%" icon="⭐" /><ModuleStat label="Derived Skills" value="14" icon="🧠" /><ModuleStat label="Experience Months" value="28" icon="📅" /><ModuleStat label="Credential Score" value="72" icon="🏅" /></section>
-      <section className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-5 flex flex-wrap gap-2">{tabs.map((tab) => <button key={tab} type="button" onClick={() => setActiveProfileTab(tab)} className={`rounded px-3 py-2 text-xs font-semibold ${activeProfileTab === tab ? 'bg-[#02aab5] text-white' : 'border border-slate-200 bg-white text-slate-700'}`}>{tab}</button>)}</div>
-      {activeProfileTab === 'Derived Skills' ? <div className="grid gap-4 md:grid-cols-2">{[['React', 88, 'Derived from projects and experience'], ['Power BI', 72, 'Derived from training and certificates'], ['Communication', 80, 'Derived from experience'], ['Network Support', 66, 'Derived from field work']].map(([skill, value, note]) => <div key={skill} className="rounded border border-slate-100 bg-slate-50 p-4"><div className="mb-2 flex items-center justify-between text-sm"><span className="font-semibold text-slate-900">{skill}</span><span>{value}%</span></div><ProgressBar value={value} /><p className="mt-2 text-xs text-slate-500">{note}</p></div>)}</div> : <div><div className="mb-4 grid gap-4 md:grid-cols-3"><MiniField label={`${activeProfileTab} Title / Name`} /><MiniField label="Provider / Organization" /><MiniSelect label="Related Skills" options={['React', 'Power BI', 'Communication', 'Network Support']} /></div><div className="mb-4 grid gap-4 md:grid-cols-2"><MiniField label="From Date" type="month" /><MiniField label="To Date" type="month" /></div><label className="block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Description</div><textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Briefly describe this entry." /></label><div className="mt-4 flex justify-end gap-2"><button className="rounded border border-slate-200 px-3 py-2 text-xs font-medium">Cancel</button><button className="rounded bg-[#02aab5] px-3 py-2 text-xs font-medium text-white">Save / Update</button></div></div>}
-      </section></DashboardShell>;
+    const tabs = ['Overview', 'Education', 'Experience', 'Projects', 'Certificates', 'Trainings', 'Derived Skills'];
+    const completionItems = [
+      ['Basic information completed', true],
+      ['CV uploaded', true],
+      ['At least one education record', true],
+      ['Experience or training added', true],
+      ['Certificates attached', false],
+      ['Job preferences selected', false],
+    ];
+    const skillRows = [
+      ['Power BI', 86, '28 months', 'Derived from training, projects, and certificates'],
+      ['Excel Reporting', 82, '30 months', 'Derived from courses and practical projects'],
+      ['React', 68, '14 months', 'Derived from portfolio projects'],
+      ['Communication', 78, '24 months', 'Derived from experience and evaluations'],
+      ['SQL', 64, '12 months', 'Derived from coursework and projects'],
+      ['Technical Support', 72, '18 months', 'Derived from experience entries'],
+    ];
+
+    return (
+      <DashboardShell role="Job Seeker" title="My CV & Skill Profile" subtitle="Complete a skill-based career profile used for matching, nominations, interviews, and offers.">
+        <section className="mb-5 grid gap-4 md:grid-cols-4">
+          <ModuleStat label="Profile Completion" value="78%" icon="⭐" />
+          <ModuleStat label="Derived Skills" value="14" icon="🧠" />
+          <ModuleStat label="Experience Months" value="28" icon="📅" />
+          <ModuleStat label="Credential Score" value="72" icon="🏅" />
+        </section>
+
+        <section className="mb-5 grid gap-5 xl:grid-cols-[0.75fr_1.25fr]">
+          <div className="rounded-sm border border-slate-100 bg-white p-5 text-center shadow-sm">
+            <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-[#eef7fb] text-5xl">👩‍💼</div>
+            <button className="mt-4 rounded bg-[#02aab5] px-4 py-2 text-xs font-semibold text-white">Upload Photo</button>
+            <h2 className="mt-4 text-lg font-semibold text-slate-900">Job Seeker Name</h2>
+            <p className="text-sm text-slate-500">Junior Data Analyst · Sohar, Oman</p>
+            <div className="mt-5 rounded bg-blue-50 p-4 text-left">
+              <div className="mb-2 flex items-center justify-between text-xs font-semibold text-[#123b8b]"><span>CV Strength</span><span>78%</span></div>
+              <ProgressBar value={78} />
+              <p className="mt-2 text-xs leading-5 text-[#123b8b]">Add certificates and job preferences to increase visibility in employer search and TRA nominations.</p>
+            </div>
+            <div className="mt-5 grid gap-3 text-left">
+              <MiniField label="Civil ID" placeholder="114623176" />
+              <MiniField label="Email" placeholder="jobseeker@email.com" />
+              <MiniField label="Phone" placeholder="95110510" />
+              <MiniSelect label="Current Status" options={['Active Job Seeker', 'Student', 'Fresh Graduate', 'Trainee', 'Currently Employed']} />
+              <MiniSelect label="Visibility" options={['Visible to verified companies', 'Visible for TRA nominations', 'Private']} />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+            <div className="mb-5 flex flex-wrap gap-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveProfileTab(tab)}
+                  className={`rounded px-3 py-2 text-xs font-semibold transition ${activeProfileTab === tab ? 'bg-[#02aab5] text-white shadow-sm' : 'border border-slate-200 bg-white text-slate-700 hover:border-[#02aab5] hover:text-[#02aab5]'}`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {activeProfileTab === 'Overview' && (
+              <div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <MiniField label="Full Name" placeholder="Job Seeker Name" />
+                  <MiniSelect label="Primary Specification" options={['Information Technology', 'Data & AI', 'Business', 'Engineering', 'Design']} />
+                  <MiniSelect label="Sub-Specification" options={['Data Analysis', 'Software Development', 'IT Support', 'UX/UI Design', 'Operations']} />
+                  <MiniSelect label="Preferred Work Mode" options={['On-site', 'Remote', 'Hybrid', 'Flexible']} />
+                  <MiniSelect label="Preferred Opportunity Type" options={['Full-Time', 'Part-Time', 'Internship', 'Training Program', 'Contract']} />
+                  <MiniField label="Portfolio / LinkedIn URL" placeholder="https://..." />
+                </div>
+                <label className="mt-4 block">
+                  <div className="mb-1.5 text-xs font-semibold text-slate-600">Career Summary</div>
+                  <textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Write a short professional summary, career interest, strongest skills, and type of opportunities you are seeking." />
+                </label>
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                  <div className="rounded bg-slate-50 p-4">
+                    <h3 className="text-sm font-semibold text-slate-900">Profile Completion Checklist</h3>
+                    <div className="mt-3 space-y-2 text-sm">
+                      {completionItems.map(([label, done]) => (
+                        <div key={String(label)} className="flex items-center justify-between rounded bg-white px-3 py-2">
+                          <span>{label}</span>
+                          <span className={done ? 'text-emerald-600' : 'text-amber-600'}>{done ? '✓ Done' : 'Pending'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded bg-slate-50 p-4">
+                    <h3 className="text-sm font-semibold text-slate-900">CV Upload Area</h3>
+                    <div className="mt-3 rounded border border-dashed border-[#02aab5] bg-white p-5 text-center text-sm">
+                      <div className="text-3xl">📄</div>
+                      <div className="mt-2 font-semibold text-[#123b8b]">Latest CV uploaded</div>
+                      <p className="mt-1 text-xs text-slate-500">PDF · Updated 2026-04-29 · Used as profile snapshot during application.</p>
+                      <div className="mt-4 flex justify-center gap-2"><button className="rounded border border-slate-200 px-3 py-2 text-xs">Preview</button><button className="rounded bg-[#02aab5] px-3 py-2 text-xs text-white">Replace CV</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeProfileTab !== 'Overview' && activeProfileTab !== 'Derived Skills' && (
+              <div>
+                <div className="mb-4 rounded bg-blue-50 p-4 text-xs leading-5 text-[#123b8b]">
+                  Entries in {activeProfileTab} support the derived skill profile and matching percentage. Updating or deleting entries should recalculate related skills later in the real backend.
+                </div>
+                <div className="mb-4 grid gap-4 md:grid-cols-3">
+                  <MiniField label={`${activeProfileTab} Title / Name`} />
+                  <MiniField label="Provider / Organization" />
+                  <MiniSelect label="Related Skills" options={['Power BI', 'React', 'SQL', 'Communication', 'Technical Support']} />
+                </div>
+                <div className="mb-4 grid gap-4 md:grid-cols-3">
+                  <MiniField label="From Date" type="month" />
+                  <MiniField label="To Date" type="month" />
+                  <MiniSelect label="Tech Stack" options={['Power BI', 'React', 'SQL Server', 'Excel', 'Figma']} />
+                </div>
+                <label className="block">
+                  <div className="mb-1.5 text-xs font-semibold text-slate-600">Description</div>
+                  <textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Briefly describe this entry, responsibilities, achievements, or learning outcomes." />
+                </label>
+                <div className="mt-5 flex justify-end gap-2"><button className="rounded border border-slate-200 px-3 py-2 text-xs font-medium">Cancel</button><button className="rounded bg-[#02aab5] px-3 py-2 text-xs font-medium text-white">Save / Update</button></div>
+              </div>
+            )}
+
+            {activeProfileTab === 'Derived Skills' && (
+              <div>
+                <div className="mb-4 grid gap-4 md:grid-cols-3">
+                  <div className="rounded bg-slate-50 p-4"><div className="text-xs text-slate-500">Top Skill</div><div className="mt-1 text-lg font-semibold text-[#123b8b]">Power BI</div></div>
+                  <div className="rounded bg-slate-50 p-4"><div className="text-xs text-slate-500">Verified Credentials</div><div className="mt-1 text-lg font-semibold text-[#123b8b]">4</div></div>
+                  <div className="rounded bg-slate-50 p-4"><div className="text-xs text-slate-500">Average Readiness</div><div className="mt-1 text-lg font-semibold text-[#123b8b]">75%</div></div>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {skillRows.map(([skill, value, months, note]) => (
+                    <div key={skill} className="rounded border border-slate-100 bg-slate-50 p-4">
+                      <div className="mb-2 flex items-center justify-between text-sm"><span className="font-semibold text-slate-900">{skill}</span><span className="font-semibold text-[#123b8b]">{value}%</span></div>
+                      <ProgressBar value={value} />
+                      <div className="mt-2 flex items-center justify-between text-xs text-slate-500"><span>{months}</span><span>{note}</span></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="grid gap-5 xl:grid-cols-3">
+          <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm xl:col-span-2">
+            <h2 className="text-base font-semibold text-slate-900">Recent Profile Records</h2>
+            <div className="mt-4 overflow-hidden rounded border border-slate-100">
+              <SimpleTable headers={['Section', 'Title', 'Skills', 'Status', 'Action']} rows={[
+                ['Education', 'BSc Computer Science', 'Programming, Data', 'Completed', 'Edit'],
+                ['Training', 'Power BI Practical Course', 'Power BI, Reporting', 'Completed', 'Edit'],
+                ['Project', 'Student Performance Dashboard', 'Excel, Power BI', 'Visible', 'Edit'],
+                ['Certificate', 'Data Analysis Fundamentals', 'Data, Visualization', 'Needs verification', 'Upload'],
+              ]} />
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+            <h2 className="text-base font-semibold text-slate-900">Matching Readiness</h2>
+            <div className="mt-4 space-y-4 text-sm">
+              {[['Primary skills selected', 100], ['Experience evidence', 75], ['Credentials verified', 55], ['Preferences completed', 60]].map(([label, value]) => (
+                <div key={String(label)}><div className="mb-1 flex justify-between"><span>{label}</span><span className="font-semibold text-[#123b8b]">{value}%</span></div><ProgressBar value={value} /></div>
+              ))}
+            </div>
+            <button className="mt-5 w-full rounded bg-[#123b8b] px-4 py-2 text-sm text-white">Save Profile Changes</button>
+          </div>
+        </section>
+      </DashboardShell>
+    );
   };
 
-  const renderJobSeekerOpportunitiesPage = () => <DashboardShell role="Job Seeker" title="Browse Opportunities" subtitle="Search opportunities, check match percentage, and start the application flow."><section className="mb-5 rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-3 md:grid-cols-5"><MiniField label="Keyword" placeholder="Search title or skill" /><MiniSelect label="Opportunity Type" options={['All', 'Full-Time', 'Part-Time', 'Contract', 'Internship', 'Training']} /><MiniSelect label="Work Mode" options={['All', 'On-site', 'Remote', 'Hybrid']} /><MiniSelect label="Education" options={['All', 'Diploma', 'Bachelor', 'Master']} /><MiniSelect label="Experience" options={['All', '0-1 Years', '2-4 Years', '5+ Years']} /></div></section><section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{opportunityListings.slice(0, 5).map((item, index) => <div key={item.title} className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-3 flex items-center justify-between"><h3 className="font-semibold text-[#123b8b]">{item.title}</h3><Tag tone={index % 2 ? 'cyan' : 'green'}>{index % 2 ? '84%' : '92%'} Match</Tag></div><p className="text-sm text-slate-500">{item.company} · {item.type} · {item.location}</p><div className="mt-4 flex flex-wrap gap-2">{item.tags.map(t => <Tag key={t} tone="cyan">{t}</Tag>)}</div><div className="mt-5 flex gap-2"><button className="rounded border border-slate-200 px-3 py-2 text-xs">Details</button><button className="rounded bg-[#02aab5] px-3 py-2 text-xs text-white">Apply</button></div></div>)}</section></DashboardShell>;
+  const renderJobSeekerOpportunitiesPage = () => <DashboardShell role="Job Seeker" title="Browse Opportunities" subtitle="Search opportunities, check match percentage, and start the application flow."><section className="mb-5 rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-3 md:grid-cols-5"><MiniField label="Keyword" placeholder="Search title or skill" /><MiniSelect label="Opportunity Type" options={['All', 'Full-Time', 'Part-Time', 'Contract', 'Internship', 'Training']} /><MiniSelect label="Work Mode" options={['All', 'On-site', 'Remote', 'Hybrid']} /><MiniSelect label="Education" options={['All', 'Diploma', 'Bachelor', 'Master']} /><MiniSelect label="Experience" options={['All', '0-1 Years', '2-4 Years', '5+ Years']} /></div></section><section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{opportunityListings.slice(0, 5).map((item, index) => <div key={item.title} className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-3 flex items-center justify-between"><h3 className="font-semibold text-[#123b8b]">{item.title}</h3><Tag tone={index % 2 ? 'cyan' : 'green'}>{index % 2 ? '84%' : '92%'} Match</Tag></div><p className="text-sm text-slate-500">{item.company} · {item.type} · {item.location}</p><div className="mt-4 flex flex-wrap gap-2">{item.tags.map(t => <Tag key={t} tone="cyan">{t}</Tag>)}</div><div className="mt-5 flex gap-2"><button className="rounded border border-slate-200 px-3 py-2 text-xs">Details</button><button className="rounded bg-[#02aab5] px-3 py-2 text-xs text-white">Apply</button></div></div>)}</section></DashboardShell>;
   const renderJobSeekerApplicationsPage = () => <DashboardShell role="Job Seeker" title="My Applications" subtitle="Track applications, nominations, invitations, and current status updates."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Total Applications" value="5" icon="📄" /><ModuleStat label="Pending Review" value="2" icon="⏳" /><ModuleStat label="Shortlisted" value="1" icon="✅" /><ModuleStat label="Offers" value="1" icon="🏁" /></section><SimpleTable headers={['Opportunity', 'Status', 'Source', 'Match', 'Actions']} rows={sampleApplications.map(r => [...r, 'View'])} /></DashboardShell>;
   const renderJobSeekerInterviewsPage = () => <DashboardShell role="Job Seeker" title="Interviews" subtitle="View interview invitations, schedule details, links, and results."><SimpleTable headers={['Opportunity', 'Date', 'Type', 'Location / Link', 'Status']} rows={[['Data Analyst Graduate Opportunity', '2026-05-03 10:00', 'Online', 'Teams link', 'Scheduled'], ['Junior IT Support Specialist', '2026-05-08 09:30', 'On-site', 'Muscat Office', 'Pending']]} /></DashboardShell>;
-  const renderJobSeekerOffersPage = () => <DashboardShell role="Job Seeker" title="Offers & Employment" subtitle="Review offers, accept, reject, request amendment, or ask for clarification."><section className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-4 flex items-center justify-between"><div><h3 className="font-semibold text-slate-900">Offer: Data Analyst Graduate Opportunity</h3><p className="text-sm text-slate-500">Status: Issued · Response deadline: 7 days</p></div><Tag tone="amber">Awaiting Response</Tag></div><div className="grid gap-4 md:grid-cols-3"><MiniField label="Start Date" type="date" /><MiniField label="Offer Type" placeholder="Permanent" /><MiniField label="Duration / End Date" type="date" /></div><div className="mt-5 flex flex-wrap gap-2"><button className="rounded bg-emerald-600 px-4 py-2 text-sm text-white">Accept</button><button className="rounded bg-red-50 px-4 py-2 text-sm text-red-700">Reject</button><button className="rounded border border-slate-200 px-4 py-2 text-sm">Request Amendment</button><button className="rounded border border-slate-200 px-4 py-2 text-sm">Ask Question</button></div></section></DashboardShell>;
+  const renderJobSeekerOffersPage = () => <DashboardShell role="Job Seeker" title="Offers & Employment" subtitle="Review offers, accept, reject, request amendment, or ask for clarification."><section className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-4 flex items-center justify-between"><div><h3 className="font-semibold text-slate-900">Offer: Data Analyst Graduate Opportunity</h3><p className="text-sm text-slate-500">Status: Issued · Response deadline: 7 days</p></div><Tag tone="amber">Awaiting Response</Tag></div><div className="grid gap-4 md:grid-cols-3"><MiniField label="Start Date" type="date" /><MiniField label="Offer Type" placeholder="Permanent" /><MiniField label="Duration / End Date" type="date" /></div><div className="mt-5 flex flex-wrap gap-2"><button className="rounded bg-emerald-600 px-4 py-2 text-sm text-white">Accept</button><button className="rounded bg-red-50 px-4 py-2 text-sm text-red-700">Reject</button><button className="rounded border border-slate-200 px-4 py-2 text-sm">Request Amendment</button><button className="rounded border border-slate-200 px-4 py-2 text-sm">Ask Question</button></div></section></DashboardShell>;
 
-  const renderCompanyCreateOpportunityPage = () => { const steps = ['Basic Information', 'Location', 'Skills & Requirements', 'Compensation', 'Screening Questions', 'Documents & Publish']; return <DashboardShell role="Company" title="Create Opportunity" subtitle="Multi-step opportunity form based on the FSD fields and lifecycle."><section className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-5 flex flex-wrap gap-2">{steps.map(step => <button key={step} onClick={() => setActiveOpportunityStep(step)} className={`rounded px-3 py-2 text-xs font-semibold ${activeOpportunityStep === step ? 'bg-[#02aab5] text-white' : 'border border-slate-200 bg-white text-slate-700'}`}>{step}</button>)}</div><div className="grid gap-4 md:grid-cols-3">{activeOpportunityStep === 'Basic Information' && <><MiniField label="Opportunity Title (EN)" /><MiniField label="Opportunity Title (AR)" /><MiniSelect label="Opportunity Type" options={['Full-Time', 'Part-Time', 'Contract', 'Internship', 'Training Program']} /><MiniSelect label="Application Method" options={['Candidate Apply', 'Employer Search', 'Admin Nomination', 'All']} /><MiniSelect label="Work Mode" options={['On-site', 'Remote', 'Hybrid']} /><MiniField label="Number of Openings" type="number" /></>}{activeOpportunityStep === 'Location' && <><MiniSelect label="Country" options={['Oman']} /><MiniSelect label="City" options={['Muscat', 'Sohar', 'Nizwa', 'Ibri', 'Salalah']} /><MiniField label="Address / Office" /></>}{activeOpportunityStep === 'Skills & Requirements' && <><MiniSelect label="Primary Skills" options={['React', 'Power BI', 'Network Support', 'Communication']} /><MiniSelect label="Tech Stack Required" options={['React', 'SQL Server', 'Power BI', 'CCTV']} /><MiniField label="Years of Experience" type="number" /><MiniSelect label="Education Level" options={['Any', 'Diploma', 'Bachelor', 'Master']} /><MiniField label="Field of Study" /><MiniSelect label="Target Applicant" options={['All', 'Job Seeker', 'Student', 'Fresh Graduate']} /></>}{activeOpportunityStep === 'Compensation' && <><MiniSelect label="Salary Display" options={['Visible', 'Hidden', 'Negotiable']} /><MiniField label="Salary Min" type="number" /><MiniField label="Salary Max" type="number" /><MiniSelect label="Currency" options={['OMR']} /><MiniSelect label="Pay Frequency" options={['Monthly', 'Hourly', 'Project-Based', 'Annual']} /></>}{activeOpportunityStep === 'Screening Questions' && <><MiniField label="Question Text" /><MiniSelect label="Answer Type" options={['Yes/No', 'Multiple Choice', 'Short Text', 'Numeric']} /><MiniSelect label="Is Required" options={['Yes', 'No']} /><MiniSelect label="Is Disqualifying" options={['No', 'Yes']} /></>}{activeOpportunityStep === 'Documents & Publish' && <><MiniField label="Document Name" /><MiniSelect label="Require Upload" options={['Not Required', 'Optional', 'Mandatory']} /><MiniField label="Publication Date" type="date" /><MiniField label="Due Date" type="date" /><MiniSelect label="Action" options={['Save as Draft', 'Preview', 'Submit for Publishing']} /></>}</div><label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Description</div><textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" /></label><div className="mt-5 flex justify-end gap-2"><button className="rounded border px-3 py-2 text-xs">Preview</button><button className="rounded bg-[#02aab5] px-3 py-2 text-xs text-white">Save Draft</button><button className="rounded bg-[#123b8b] px-3 py-2 text-xs text-white">Submit for Publishing</button></div></section></DashboardShell>; };
+  const renderCompanyCreateOpportunityPage = () => { const steps = ['Basic Information', 'Location', 'Skills & Requirements', 'Compensation', 'Screening Questions', 'Documents & Publish']; return <DashboardShell role="Company" title="Create Opportunity" subtitle="Multi-step opportunity form based on the FSD fields and lifecycle."><section className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-5 flex flex-wrap gap-2">{steps.map(step => <button key={step} onClick={() => setActiveOpportunityStep(step)} className={`rounded px-3 py-2 text-xs font-semibold ${activeOpportunityStep === step ? 'bg-[#02aab5] text-white' : 'border border-slate-200 bg-white text-slate-700'}`}>{step}</button>)}</div><div className="grid gap-4 md:grid-cols-3">{activeOpportunityStep === 'Basic Information' && <><MiniField label="Opportunity Title (EN)" /><MiniField label="Opportunity Title (AR)" /><MiniSelect label="Opportunity Type" options={['Full-Time', 'Part-Time', 'Contract', 'Internship', 'Training Program']} /><MiniSelect label="Application Method" options={['Candidate Apply', 'Employer Search', 'Admin Nomination', 'All']} /><MiniSelect label="Work Mode" options={['On-site', 'Remote', 'Hybrid']} /><MiniField label="Number of Openings" type="number" /></>}{activeOpportunityStep === 'Location' && <><MiniSelect label="Country" options={['Oman']} /><MiniSelect label="City" options={['Muscat', 'Sohar', 'Nizwa', 'Ibri', 'Salalah']} /><MiniField label="Address / Office" /></>}{activeOpportunityStep === 'Skills & Requirements' && <><MiniSelect label="Primary Skills" options={['React', 'Power BI', 'Network Support', 'Communication']} /><MiniSelect label="Tech Stack Required" options={['React', 'SQL Server', 'Power BI', 'CCTV']} /><MiniField label="Years of Experience" type="number" /><MiniSelect label="Education Level" options={['Any', 'Diploma', 'Bachelor', 'Master']} /><MiniField label="Field of Study" /><MiniSelect label="Target Applicant" options={['All', 'Job Seeker', 'Student', 'Fresh Graduate']} /></>}{activeOpportunityStep === 'Compensation' && <><MiniSelect label="Salary Display" options={['Visible', 'Hidden', 'Negotiable']} /><MiniField label="Salary Min" type="number" /><MiniField label="Salary Max" type="number" /><MiniSelect label="Currency" options={['OMR']} /><MiniSelect label="Pay Frequency" options={['Monthly', 'Hourly', 'Project-Based', 'Annual']} /></>}{activeOpportunityStep === 'Screening Questions' && <><MiniField label="Question Text" /><MiniSelect label="Answer Type" options={['Yes/No', 'Multiple Choice', 'Short Text', 'Numeric']} /><MiniSelect label="Is Required" options={['Yes', 'No']} /><MiniSelect label="Is Disqualifying" options={['No', 'Yes']} /></>}{activeOpportunityStep === 'Documents & Publish' && <><MiniField label="Document Name" /><MiniSelect label="Require Upload" options={['Not Required', 'Optional', 'Mandatory']} /><MiniField label="Publication Date" type="date" /><MiniField label="Due Date" type="date" /><MiniSelect label="Action" options={['Save as Draft', 'Preview', 'Submit for Publishing']} /></>}</div><label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Description</div><textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" /></label><div className="mt-5 flex justify-end gap-2"><button className="rounded border px-3 py-2 text-xs">Preview</button><button className="rounded bg-[#02aab5] px-3 py-2 text-xs text-white">Save Draft</button><button className="rounded bg-[#123b8b] px-3 py-2 text-xs text-white">Submit for Publishing</button></div></section></DashboardShell>; };
   const renderCompanyApplicationsPage = () => <DashboardShell role="Company" title="Application & Nomination Management" subtitle="Review candidates, update status, add notes, and move shortlisted candidates to interviews."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Total Candidates" value="48" icon="👥" /><ModuleStat label="Pending Review" value="18" icon="⏳" /><ModuleStat label="Shortlisted" value="9" icon="✅" /><ModuleStat label="Rejected" value="6" icon="✕" /></section><SimpleTable headers={['Candidate', 'Source Tag', 'Match %', 'Status', 'Actions']} rows={sampleCandidates.map(r => [r[0], 'Organic', r[2], r[3], 'View / Update'])} /></DashboardShell>;
-  const renderCompanyCandidateSearchPage = () => <DashboardShell role="Company" title="Candidate Search & Matching" subtitle="Search by opportunity or manual filters and nominate or invite candidates."><section className="mb-5 rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-3 md:grid-cols-5"><MiniSelect label="Opportunity" options={['Frontend Developer', 'Data Analyst', 'IT Support']} /><MiniSelect label="Skills" options={['React', 'Power BI', 'Networking']} /><MiniField label="Min Years" type="number" /><MiniSelect label="Education" options={['Any', 'Bachelor', 'Diploma']} /><MiniSelect label="Specification" options={['IT', 'Data', 'Operations']} /></div></section><SimpleTable headers={['Candidate Name', 'Specification', 'Education', 'Experience', 'Matching %', 'Actions']} rows={sampleCandidates.map((r, i) => [r[0], r[1], 'Bachelor', `${i + 1} Years`, r[2], 'View / Nominate / Ask to Apply'])} /></DashboardShell>;
-  const renderCompanyInterviewsPage = () => <DashboardShell role="Company" title="Interview Management" subtitle="Create interview sessions, schedule shortlisted candidates, and record assessment decisions."><section className="mb-5 rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-3 md:grid-cols-4"><MiniSelect label="Interview Type" options={['Online', 'On-site', 'Phone']} /><MiniField label="Location / Link" /><MiniSelect label="Interviewer" options={['Hiring Manager', 'Technical Lead', 'HR']} /><MiniSelect label="Skills to Assess" options={['React', 'Communication', 'Problem Solving']} /></div></section><SimpleTable headers={['Candidate', 'Match %', 'Date', 'Time', 'Status']} rows={sampleCandidates.map((r, i) => [r[0], r[2], `2026-05-${10 + i}`, '10:00 AM', i === 0 ? 'Scheduled' : 'Pending'])} /></DashboardShell>;
-  const renderCompanyOffersPage = () => <DashboardShell role="Company" title="Offer Management" subtitle="Prepare offers by uploading a document, entering data, or using both methods."><section className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-4 flex gap-2"><Tag tone="blue">Upload Document</Tag><Tag tone="cyan">Enter Offer Data</Tag><Tag tone="green">Both</Tag></div><div className="grid gap-4 md:grid-cols-3"><MiniSelect label="Offer Type" options={['Permanent', 'Fixed-Term', 'Internship', 'Training']} /><MiniField label="Start Date" type="date" /><MiniField label="End Date / Duration" type="date" /><MiniField label="Salary / Compensation" type="number" /><MiniSelect label="Currency" options={['OMR']} /><MiniField label="Probation Period Days" type="number" /></div><div className="mt-5 flex justify-end"><button className="rounded bg-[#123b8b] px-4 py-2 text-sm text-white">Issue Offer</button></div></section></DashboardShell>;
+  const renderCompanyCandidateSearchPage = () => <DashboardShell role="Company" title="Candidate Search & Matching" subtitle="Search by opportunity or manual filters and nominate or invite candidates."><section className="mb-5 rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-3 md:grid-cols-5"><MiniSelect label="Opportunity" options={['Frontend Developer', 'Data Analyst', 'IT Support']} /><MiniSelect label="Skills" options={['React', 'Power BI', 'Networking']} /><MiniField label="Min Years" type="number" /><MiniSelect label="Education" options={['Any', 'Bachelor', 'Diploma']} /><MiniSelect label="Specification" options={['IT', 'Data', 'Operations']} /></div></section><SimpleTable headers={['Candidate Name', 'Specification', 'Education', 'Experience', 'Matching %', 'Actions']} rows={sampleCandidates.map((r, i) => [r[0], r[1], 'Bachelor', `${i + 1} Years`, r[2], 'View / Nominate / Ask to Apply'])} /></DashboardShell>;
+  const renderCompanyInterviewsPage = () => <DashboardShell role="Company" title="Interview Management" subtitle="Create interview sessions, schedule shortlisted candidates, and record assessment decisions."><section className="mb-5 rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-3 md:grid-cols-4"><MiniSelect label="Interview Type" options={['Online', 'On-site', 'Phone']} /><MiniField label="Location / Link" /><MiniSelect label="Interviewer" options={['Hiring Manager', 'Technical Lead', 'HR']} /><MiniSelect label="Skills to Assess" options={['React', 'Communication', 'Problem Solving']} /></div></section><SimpleTable headers={['Candidate', 'Match %', 'Date', 'Time', 'Status']} rows={sampleCandidates.map((r, i) => [r[0], r[2], `2026-05-${10 + i}`, '10:00 AM', i === 0 ? 'Scheduled' : 'Pending'])} /></DashboardShell>;
+  const renderCompanyOffersPage = () => <DashboardShell role="Company" title="Offer Management" subtitle="Prepare offers by uploading a document, entering data, or using both methods."><section className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-4 flex gap-2"><Tag tone="blue">Upload Document</Tag><Tag tone="cyan">Enter Offer Data</Tag><Tag tone="green">Both</Tag></div><div className="grid gap-4 md:grid-cols-3"><MiniSelect label="Offer Type" options={['Permanent', 'Fixed-Term', 'Internship', 'Training']} /><MiniField label="Start Date" type="date" /><MiniField label="End Date / Duration" type="date" /><MiniField label="Salary / Compensation" type="number" /><MiniSelect label="Currency" options={['OMR']} /><MiniField label="Probation Period Days" type="number" /></div><div className="mt-5 flex justify-end"><button className="rounded bg-[#123b8b] px-4 py-2 text-sm text-white">Issue Offer</button></div></section></DashboardShell>;
+
+
+  const renderFreelancerSupportPage = () => (
+    <DashboardShell role="Freelancer" title="Support Center" subtitle="Get help with projects, offers, contracts, payments, disputes, and profile visibility without leaving the freelancer workspace.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4">
+        <ModuleStat label="Open Tickets" value="2" icon="💬" />
+        <ModuleStat label="Resolved" value="14" icon="✅" />
+        <ModuleStat label="Avg. Response" value="1.5d" icon="⏱️" />
+        <ModuleStat label="Guides" value="8" icon="📘" />
+      </section>
+      <section className="grid gap-5 xl:grid-cols-[0.85fr_1.15fr]">
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+          <h2 className="mb-4 font-semibold text-slate-900">Create Support Ticket</h2>
+          <div className="grid gap-4">
+            <MiniSelect label="Support Topic" options={['Project application', 'Contract', 'Payment', 'Dispute', 'Profile visibility', 'Other']} />
+            <MiniSelect label="Priority" options={['Normal', 'High', 'Urgent']} />
+            <MiniField label="Related Project / Offer" placeholder="Optional" />
+          </div>
+          <label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Message</div><textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Describe the issue clearly so the Nafadh team can help you faster." /></label>
+          <button className="mt-4 rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Submit Ticket</button>
+        </div>
+        <SimpleTable headers={['Ticket', 'Topic', 'Date', 'Status', 'Action']} rows={[[ 'Payment review question', 'Payment', '2026-04-27', 'Under Review', 'Open'], ['Profile visibility request', 'Profile', '2026-04-25', 'Resolved', 'View']]} />
+      </section>
+    </DashboardShell>
+  );
+
+  const renderJobSeekerTrainingPage = () => (
+    <DashboardShell role="Job Seeker" title="Courses & Training" subtitle="Track recommended courses, TRA programs, workshops, and learning activities linked to your career readiness.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Recommended Courses" value="6" icon="🎓" /><ModuleStat label="In Progress" value="2" icon="⏳" /><ModuleStat label="Completed" value="4" icon="✅" /><ModuleStat label="Skill Gaps" value="3" icon="🎯" /></section>
+      <SimpleTable headers={['Course / Program', 'Provider', 'Related Skills', 'Status', 'Action']} rows={[[ 'Data Analysis and Reporting Skills', 'Nafadh', 'Power BI, Excel', 'Recommended', 'View'], ['TRA Cloud Tools Session', 'TRA', 'Cloud, Remote Work', 'Upcoming', 'Register'], ['SQL for Beginners', 'Nafadh', 'SQL', 'In Progress', 'Continue']]} />
+    </DashboardShell>
+  );
+
+  const renderJobSeekerCertificatesPage = () => (
+    <DashboardShell role="Job Seeker" title="Certificates" subtitle="Upload, verify, and manage certificates that strengthen your matching score and employer visibility.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Uploaded" value="5" icon="🏅" /><ModuleStat label="Verified" value="3" icon="✅" /><ModuleStat label="Pending" value="2" icon="⏳" /><ModuleStat label="Credential Score" value="72" icon="⭐" /></section>
+      <section className="grid gap-5 xl:grid-cols-[0.8fr_1.2fr]">
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Upload Certificate</h2><div className="grid gap-4"><MiniField label="Certificate Name" /><MiniField label="Provider" /><MiniSelect label="Related Skill" options={['Power BI', 'Excel', 'SQL', 'React', 'Communication']} /><MiniSelect label="Verification Status" options={['Pending', 'Verified', 'Needs review']} /></div><button className="mt-4 rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Upload</button></div>
+        <SimpleTable headers={['Certificate', 'Provider', 'Related Skill', 'Status', 'Action']} rows={[[ 'Data Analysis Fundamentals', 'Training Provider', 'Data', 'Pending', 'Review'], ['Power BI Practical Course', 'Nafadh', 'Power BI', 'Verified', 'View'], ['SQL Basics', 'Online Course', 'SQL', 'Verified', 'View']]} />
+      </section>
+    </DashboardShell>
+  );
+
+  const renderJobSeekerSettingsPage = () => (
+    <DashboardShell role="Job Seeker" title="Settings" subtitle="Manage job preferences, visibility, notifications, and account security for your career profile.">
+      <section className="grid gap-5 xl:grid-cols-2">
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Career Preferences</h2><div className="grid gap-4"><MiniSelect label="Profile Visibility" options={['Visible to verified companies', 'Visible for TRA nominations', 'Private']} /><MiniSelect label="Preferred Opportunity Type" options={['Full-Time', 'Part-Time', 'Internship', 'Training Program', 'Contract']} /><MiniSelect label="Preferred Work Mode" options={['On-site', 'Remote', 'Hybrid']} /><MiniSelect label="Relocation" options={['Open within Oman', 'Same governorate only', 'Remote only']} /></div></div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Notifications & Security</h2><div className="grid gap-4"><MiniSelect label="Opportunity Alerts" options={['Enabled', 'Disabled']} /><MiniSelect label="Interview Reminders" options={['Email + Platform', 'Platform only']} /><MiniField label="New Password" type="password" /><MiniField label="Confirm New Password" type="password" /></div><button className="mt-5 rounded bg-[#123b8b] px-4 py-2 text-sm text-white">Save Settings</button></div>
+      </section>
+    </DashboardShell>
+  );
+
+  const renderCompanyTendersPage = () => (
+    <DashboardShell role="Company" title="Tenders" subtitle="A company workspace entry for tender-related journeys, linked to the existing Nafadh tender platform when backend integration is ready.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Open Tenders" value="3" icon="📑" /><ModuleStat label="Draft Submissions" value="1" icon="📝" /><ModuleStat label="Submitted" value="2" icon="✅" /><ModuleStat label="Closing Soon" value="1" icon="⏰" /></section>
+      <SimpleTable headers={['Tender', 'Source', 'Closing Date', 'Status', 'Action']} rows={[[ 'Network maintenance tender', 'Nafadh Tenders', '2026-05-10', 'Open', 'Open tender'], ['Digital services tender', 'TRA', '2026-05-22', 'Draft', 'Continue'], ['Dashboard analytics tender', 'Nafadh Tenders', '2026-06-01', 'Submitted', 'View']]} />
+    </DashboardShell>
+  );
+
+  const renderCompanyTrainingRequestsPage = () => (
+    <DashboardShell role="Company" title="Training Requests" subtitle="Request training, workshops, or development programs for company teams and track review status.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Submitted Requests" value="4" icon="🎓" /><ModuleStat label="Under Review" value="2" icon="⏳" /><ModuleStat label="Approved" value="1" icon="✅" /><ModuleStat label="Participants" value="38" icon="👥" /></section>
+      <section className="grid gap-5 xl:grid-cols-[0.85fr_1.15fr]">
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">New Training Request</h2><div className="grid gap-4"><MiniField label="Training Topic" placeholder="Example: Power BI for operations team" /><MiniSelect label="Format" options={['Workshop', 'Training', 'Session']} /><MiniField label="Expected Participants" type="number" /><MiniSelect label="Preferred Delivery" options={['On-site', 'Online', 'Hybrid']} /></div><button className="mt-4 rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Submit Request</button></div>
+        <SimpleTable headers={['Request', 'Format', 'Participants', 'Status', 'Action']} rows={[[ 'Data dashboard training', 'Workshop', '20', 'Under Review', 'View'], ['Cybersecurity awareness', 'Session', '18', 'Approved', 'Schedule'], ['Cloud collaboration tools', 'Training', '12', 'Draft', 'Edit']]} />
+      </section>
+    </DashboardShell>
+  );
+
+  const renderAdminInterviewsPage = () => (
+    <DashboardShell role="System Admin" title="Interview Management" subtitle="System-level view of interview workflows, configuration, and scheduling health across the platform.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Scheduled" value="45" icon="📅" /><ModuleStat label="Need Assessment" value="6" icon="📝" /><ModuleStat label="Reschedule Requests" value="4" icon="🔁" /><ModuleStat label="Completed" value="33" icon="✅" /></section>
+      <SimpleTable headers={['Interview', 'Owner', 'Candidate', 'Status', 'Admin Action']} rows={[[ 'Data Analyst interview', 'Private Company', 'Maha Al Kharusi', 'Scheduled', 'Monitor'], ['Frontend technical review', 'SME Company', 'Ahmed Al Abri', 'Needs Assessment', 'Remind'], ['IT Support interview', 'Government Partner', 'Fatma Al Riyami', 'Reschedule Requested', 'Coordinate']]} />
+    </DashboardShell>
+  );
 
   const renderAdminConfigPage = () => <DashboardShell role="System Admin" title="System Configuration" subtitle="Manage system variables, dynamic dropdowns, and platform-wide behavior."><section className="grid gap-5 xl:grid-cols-2"><SimpleTable headers={['Variable Key', 'Name', 'Type', 'Value', 'Actions']} rows={[[ 'ALLOW_USER_RATING', 'Allow user skill rating', 'Boolean', 'False', 'Edit'], ['MATCH_NOTIFICATION_THRESHOLD', 'Match threshold', 'Integer', '75', 'Edit'], ['DEFAULT_LOCALE', 'Default locale', 'String', 'en', 'Edit']]} /><SimpleTable headers={['List Category', 'Item Key', 'Label EN', 'Label AR', 'Active']} rows={[[ 'Degree_Level', 'BACHELOR', 'Bachelor', 'بكالوريوس', 'Yes'], ['Eval_Status', 'ACTIVE', 'Active', 'نشط', 'Yes'], ['Opportunity_Type', 'INTERNSHIP', 'Internship', 'تدريب عملي', 'Yes']]} /></section></DashboardShell>;
   const renderAdminSkillsPage = () => <DashboardShell role="System Admin" title="Skills Management" subtitle="Centralized taxonomy for skill categories, skills, and tech stacks."><section className="grid gap-5 xl:grid-cols-2"><SimpleTable headers={['Code', 'Label EN', 'Label AR', 'Sort', 'Active']} rows={[[ 'SOFTWARE', 'Software', 'برمجيات', '1', 'Yes'], ['DATA_AI', 'Data & AI', 'البيانات والذكاء الاصطناعي', '2', 'Yes'], ['NETWORKS', 'Networks', 'الشبكات', '3', 'Yes']]} /><SimpleTable headers={['Code', 'Category', 'Type', 'Label EN', 'Actions']} rows={[[ 'REACT', 'Software', 'Tech Stack', 'React', 'Edit'], ['POWER_BI', 'Data & AI', 'Skill', 'Power BI', 'Edit'], ['CCTV', 'Networks', 'Skill', 'CCTV Installation', 'Edit']]} /></section></DashboardShell>;
   const renderAdminCredentialsPage = () => <DashboardShell role="System Admin" title="Credential Management" subtitle="Manage evaluations, exams, courses, enrollment, and credential results."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Evaluations" value="2" icon="🧪" /><ModuleStat label="Exams" value="1" icon="📝" /><ModuleStat label="Courses" value="1" icon="🎓" /><ModuleStat label="Pending Results" value="4" icon="⏳" /></section><SimpleTable headers={['Type', 'Title', 'Associated Skills', 'Weight', 'Status', 'Actions']} rows={[[ 'Evaluation', 'Frontend Assessment', 'React, Problem Solving', '8', 'Active', 'Enroll / Rate'], ['Exam', 'Angular Theory Exam', 'Angular', '5', 'Active', 'Edit'], ['Course', 'SQL for Beginners', 'SQL', '4', 'Draft', 'Edit']]} /></DashboardShell>;
-  const renderCompanyProfilePage = () => <DashboardShell role="Company" title="Company Profile Completion" subtitle="Company classification is completed here after signup, not during login or registration."><section className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-5 grid gap-4 md:grid-cols-3"><MiniField label="Company Name" /><MiniField label="Commercial Registration Number" /><MiniSelect label="Company Type" options={['SME', 'Non-SME / Large Entity', 'Government / Semi-Government', 'Other']} /><MiniSelect label="Industry" options={['ICT', 'Telecom', 'Retail', 'Education', 'Construction', 'Other']} /><MiniSelect label="Verification Status" options={['Pending', 'Verified', 'Rejected']} /><MiniField label="Official Email" /></div><label className="block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Company Brief</div><textarea rows={4} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Describe the company, hiring needs, and type of opportunities it may publish." /></label><div className="mt-5 rounded bg-blue-50 p-4 text-sm text-[#123b8b]">This keeps public signup simple as Company, while profile completion captures whether it is SME, Non-SME, or another entity type.</div></section></DashboardShell>;
+  const renderCompanyProfilePage = () => <DashboardShell role="Company" title="Company Profile Completion" subtitle="Company classification is completed here after signup, not during login or registration."><section className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-5 grid gap-4 md:grid-cols-3"><MiniField label="Company Name" /><MiniField label="Commercial Registration Number" /><MiniSelect label="Company Type" options={['SME', 'Non-SME / Large Entity', 'Government / Semi-Government', 'Other']} /><MiniSelect label="Industry" options={['ICT', 'Telecom', 'Retail', 'Education', 'Construction', 'Other']} /><MiniSelect label="Verification Status" options={['Pending', 'Verified', 'Rejected']} /><MiniField label="Official Email" /></div><label className="block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Company Brief</div><textarea rows={4} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Describe the company, hiring needs, and type of opportunities it may publish." /></label><div className="mt-5 rounded bg-blue-50 p-4 text-sm text-[#123b8b]">This keeps public signup simple as Company, while profile completion captures whether it is SME, Non-SME, or another entity type.</div></section></DashboardShell>;
 
-  const renderIndividualProfilePage = () => <DashboardShell role="Individual Client" title="Individual Client Profile" subtitle="Individual clients can be personal users, traders, or shop owners who need services."><section className="rounded-sm border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-5 grid gap-4 md:grid-cols-3"><MiniField label="Full Name" /><MiniField label="Civil ID" /><MiniSelect label="Individual Type" options={['Personal Request', 'Trader / Shop Owner', 'Home Service Request', 'Other']} /><MiniField label="Phone Number" /><MiniSelect label="Primary Service Interest" options={['Technical Support', 'CCTV / Networks', 'Website', 'Design', 'Maintenance', 'Other']} /><MiniSelect label="Preferred Contact Method" options={['Phone', 'Email', 'Platform Messages']} /></div><label className="block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Request Context</div><textarea rows={4} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Example: I own a small shop and need someone to install cameras, or I need a freelancer to build a simple website." /></label><div className="mt-5 rounded bg-cyan-50 p-4 text-sm text-[#123b8b]">This account stays under Individual Client, while the profile clarifies whether the user is a trader, shop owner, or personal requester.</div></section></DashboardShell>;
+  const renderIndividualProfilePage = () => <DashboardShell role="Individual Client" title="Individual Client Profile" subtitle="Individual clients can be personal users, traders, or shop owners who need services."><section className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-5 grid gap-4 md:grid-cols-3"><MiniField label="Full Name" /><MiniField label="Civil ID" /><MiniSelect label="Individual Type" options={['Personal Request', 'Trader / Shop Owner', 'Home Service Request', 'Other']} /><MiniField label="Phone Number" /><MiniSelect label="Primary Service Interest" options={['Technical Support', 'CCTV / Networks', 'Website', 'Design', 'Maintenance', 'Other']} /><MiniSelect label="Preferred Contact Method" options={['Phone', 'Email', 'Platform Messages']} /></div><label className="block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Request Context</div><textarea rows={4} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Example: I own a small shop and need someone to install cameras, or I need a freelancer to build a simple website." /></label><div className="mt-5 rounded bg-cyan-50 p-4 text-sm text-[#123b8b]">This account stays under Individual Client, while the profile clarifies whether the user is a trader, shop owner, or personal requester.</div></section></DashboardShell>;
+
+
+  const individualRequests = [
+    ['Install CCTV cameras for home', 'Barka', '8 offers received', 'Open', 'Compare'],
+    ['Personal website setup', 'Remote', '4 offers received', 'Under Review', 'View'],
+    ['Router configuration support', 'Sohar', 'Completed last week', 'Completed', 'Details'],
+  ];
+
+  const renderIndividualPostRequestPage = () => (
+    <DashboardShell role="Individual Client" title="Post Service Request" subtitle="Create a clear request for freelancers, technical providers, or skilled talent without using the company posting form.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4">
+        <ModuleStat label="Draft Request" value="1" icon="📝" />
+        <ModuleStat label="Suggested Services" value="6" icon="🛠️" />
+        <ModuleStat label="Expected Offers" value="8" icon="📨" />
+        <ModuleStat label="Profile Ready" value="74%" icon="⭐" />
+      </section>
+      <section className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="mb-5 rounded bg-gradient-to-r from-[#123b8b] to-[#02aab5] px-4 py-3 text-sm font-semibold text-white">Request Details</div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <MiniField label="Request Title" placeholder="Example: Install CCTV cameras for home" />
+          <MiniSelect label="Service Category" options={['CCTV / Networks', 'Website', 'Design', 'Maintenance', 'Data / Reports', 'Other']} />
+          <MiniSelect label="Request Type" options={['Personal Request', 'Trader / Shop Owner', 'Home Service Request', 'Urgent Technical Support']} />
+          <MiniSelect label="Preferred Work Mode" options={['On-site', 'Remote', 'Hybrid']} />
+          <MiniField label="Location / Wilayat" placeholder="Example: Barka" />
+          <MiniSelect label="Budget Range" options={['Not sure', 'OMR 50 - 100', 'OMR 100 - 250', 'OMR 250+']} />
+        </div>
+        <label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Request Description</div><textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Describe what you need, expected outcome, location, preferred timing, and any photos or documents required." /></label>
+        <div className="mt-5 flex flex-wrap justify-end gap-2"><button className="rounded border border-slate-200 px-4 py-2 text-sm">Save Draft</button><button className="rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Publish Request</button></div>
+      </section>
+    </DashboardShell>
+  );
+
+  const renderIndividualRequestsPage = () => (
+    <DashboardShell role="Individual Client" title="My Requests" subtitle="Track all service requests, received offers, selected providers, and completion status.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Open Requests" value="2" icon="📝" /><ModuleStat label="Offers Received" value="14" icon="📨" /><ModuleStat label="In Progress" value="1" icon="⏳" /><ModuleStat label="Completed" value="3" icon="✅" /></section>
+      <SimpleTable headers={['Request', 'Location', 'Offers / Update', 'Status', 'Action']} rows={individualRequests} />
+    </DashboardShell>
+  );
+
+  const renderIndividualMessagesPage = () => (
+    <DashboardShell role="Individual Client" title="Messages" subtitle="Communicate with freelancers, compare offers, and keep conversations connected to each request.">
+      <section className="grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
+        <div className="rounded-xl border border-slate-100 bg-white shadow-sm"><div className="flex items-center justify-between border-b border-slate-100 p-5"><div><h2 className="font-semibold text-slate-900">Network Specialist</h2><p className="text-xs text-slate-500">Related request: Install CCTV cameras for home</p></div><Tag tone="green">Offer Received</Tag></div><div className="min-h-[340px] space-y-4 p-5 text-sm"><div className="max-w-sm rounded-2xl bg-blue-50 p-3 text-slate-700">Hello, I can visit the location and provide camera installation with warranty.</div><div className="ml-auto max-w-sm rounded-2xl bg-[#123b8b] p-3 text-white">Thank you. Please share the estimated price and available timing.</div><div className="max-w-sm rounded-2xl bg-blue-50 p-3 text-slate-700">Estimated range is OMR 180 - 240 depending on number of cameras.</div></div><div className="flex items-center gap-2 border-t border-slate-100 p-4"><input className="flex-1 rounded border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#02aab5]" placeholder="Write a message" /><button className="rounded bg-[#02aab5] px-4 py-2 text-white">Send</button></div></div>
+        <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><MiniField label="Search" placeholder="Search conversations" /><div className="mt-4 space-y-3"><div className="rounded bg-slate-50 p-4"><div className="font-semibold text-[#123b8b]">Network Specialist</div><p className="mt-1 text-xs text-slate-500">CCTV request · New offer</p></div><div className="rounded bg-slate-50 p-4"><div className="font-semibold text-[#123b8b]">Website Designer</div><p className="mt-1 text-xs text-slate-500">Personal website setup</p></div></div></div>
+      </section>
+    </DashboardShell>
+  );
+
+  const renderIndividualSavedTalentPage = () => (
+    <DashboardShell role="Individual Client" title="Saved Talent" subtitle="Review freelancers and skilled profiles you saved for current or future service requests.">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{talentProfiles.filter((talent) => talent.talentType === 'Freelancer').slice(0, 6).map((talent) => <div key={talent.name} className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="mb-3 flex items-center gap-3"><div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef7fb] text-2xl">{talent.image}</div><div><h3 className="font-semibold text-[#123b8b]">{talent.name}</h3><p className="text-xs text-slate-500">{talent.role}</p></div></div><div className="mt-3 flex flex-wrap gap-2">{talent.skills.slice(0, 3).map((skill) => <Tag key={skill} tone="cyan">{skill}</Tag>)}</div><div className="mt-4 flex justify-between text-sm text-slate-500"><span>⭐ {talent.rating}</span><span><OmrText text={talent.rate} size={12} /></span></div><button className="mt-4 w-full rounded bg-[#02aab5] px-3 py-2 text-sm text-white">Invite to Request</button></div>)}</section>
+    </DashboardShell>
+  );
+
+  const renderIndividualInvoicesPage = () => (
+    <DashboardShell role="Individual Client" title="Invoices" subtitle="Track payments, invoices, service receipts, and completed request costs.">
+      <section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Total Paid" value="OMR 420" icon="💰" /><ModuleStat label="Pending" value="OMR 120" icon="⏳" /><ModuleStat label="Invoices" value="5" icon="🧾" /><ModuleStat label="Refund Requests" value="0" icon="↩️" /></section>
+      <SimpleTable headers={['Invoice', 'Related Request', 'Amount', 'Status', 'Action']} rows={[[ 'INV-1001', 'Router configuration support', 'OMR 70', 'Paid', 'View'], ['INV-1002', 'Personal website setup', 'OMR 200', 'Pending', 'Pay'], ['INV-1003', 'CCTV site visit', 'OMR 150', 'Draft', 'Review']]} />
+    </DashboardShell>
+  );
+
+  const renderIndividualSupportPage = () => (
+    <DashboardShell role="Individual Client" title="Support" subtitle="Get help with requests, offers, payments, invoices, or account settings.">
+      <section className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]"><div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><h2 className="mb-4 font-semibold text-slate-900">Create Support Case</h2><div className="grid gap-4"><MiniSelect label="Case Type" options={['Request issue', 'Payment / invoice', 'Freelancer communication', 'Account support', 'Other']} /><MiniSelect label="Priority" options={['Normal', 'High', 'Urgent']} /><MiniField label="Related Request / Invoice" placeholder="Optional reference" /></div><label className="mt-4 block"><div className="mb-1.5 text-xs font-semibold text-slate-600">Details</div><textarea rows={5} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#02aab5]" /></label><button className="mt-4 rounded bg-[#02aab5] px-4 py-2 text-sm text-white">Submit Case</button></div><SimpleTable headers={['Case', 'Type', 'Priority', 'Status', 'Action']} rows={[[ 'Cannot compare offers', 'Request issue', 'Normal', 'Open', 'View'], ['Invoice clarification', 'Payment / invoice', 'Normal', 'Resolved', 'View']]} /></section>
+    </DashboardShell>
+  );
 
   const renderAdminOpportunitiesPage = () => <DashboardShell role="System Admin" title="Opportunity Oversight" subtitle="Monitor lifecycle, publish status, admin nomination, and featured opportunities."><SimpleTable headers={['Opportunity', 'Owner', 'Status', 'Applicants', 'Admin Controls']} rows={[[ 'Frontend Developer', 'SME Company', 'Published', '26', 'Nominate / Feature'], ['Network Maintenance', 'Operator', 'Submitted', '0', 'Review / Publish'], ['Data Analyst Graduate', 'Private Company', 'Draft', '0', 'Post on behalf']]} /></DashboardShell>;
-  const renderAdminUsersPage = () => <DashboardShell role="System Admin" title="User Management" subtitle="A simple admin view for job seekers, companies, operators, and account status."><SimpleTable headers={['User', 'Role', 'Status', 'Profile Completion', 'Actions']} rows={[[ 'Maha Al Kharusi', 'Job Seeker', 'Active', '78%', 'View'], ['Oman SME LLC', 'Company', 'Verified', '100%', 'Manage'], ['Operations User', 'Operator', 'Active', '—', 'Edit']]} /></DashboardShell>;
+  const renderAdminUsersPage = () => <DashboardShell role="System Admin" title="User Management" subtitle="Manage job seekers, freelancers, companies, individual clients, operators, and account status."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Job Seekers" value="64" icon="🎓" /><ModuleStat label="Freelancers" value="58" icon="💼" /><ModuleStat label="Companies" value="34" icon="🏢" /><ModuleStat label="Operators/Admins" value="8" icon="🛡️" /></section><SimpleTable headers={['User', 'Role', 'Status', 'Profile Completion', 'Actions']} rows={[[ 'Maha Al Kharusi', 'Job Seeker', 'Active', '78%', 'View / Suspend'], ['Asail Studio', 'Freelancer', 'Active', '92%', 'View / Feature'], ['Oman SME LLC', 'Company', 'Verified', '100%', 'Manage'], ['Operations User', 'Operator', 'Active', '—', 'Edit Role']]} /></DashboardShell>;
+
+  const renderAdminContentPage = () => <DashboardShell role="System Admin" title="Website Content Management" subtitle="Control public homepage sections, service cards, trusted logos, FAQs, and announcements."><section className="grid gap-5 xl:grid-cols-2"><SimpleTable headers={['Section', 'Status', 'Last Update', 'Action']} rows={[[ 'Hero Section', 'Published', '2026-04-29', 'Edit'], ['Explore Popular Services', 'Published', '2026-04-28', 'Manage Cards'], ['Trusted Companies Logos', 'Published', '2026-04-27', 'Update Logos'], ['Public Announcements', 'Draft', '2026-04-26', 'Publish']]} /><div className="rounded-xl bg-white p-5 shadow-sm"><h3 className="text-base font-bold text-[#123b8b]">Content rules</h3><div className="mt-4 space-y-3 text-sm text-slate-600"><p>• Public content should support Arabic and English before publishing.</p><p>• Homepage changes should be previewed before going live.</p><p>• Trusted logos should include official website links.</p></div></div></section></DashboardShell>;
+
+  const renderAdminVerificationPage = () => <DashboardShell role="System Admin" title="Verification Center" subtitle="Review account verification, company eligibility, profile completeness, and admin approval queues."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Company Reviews" value="5" icon="🏢" /><ModuleStat label="Freelancer Profiles" value="4" icon="💼" /><ModuleStat label="Job Seeker Profiles" value="3" icon="🎓" /><ModuleStat label="Rejected" value="1" icon="🚫" /></section><SimpleTable headers={['Request', 'Account Type', 'Submitted', 'Priority', 'Action']} rows={[[ 'Oman Smart Solutions', 'Company Verification', '2026-04-29', 'High', 'Approve / Return'], ['Ali Al Balushi', 'Freelancer Profile Review', '2026-04-28', 'Medium', 'Review'], ['Maha Al Kharusi', 'Job Seeker CV Review', '2026-04-27', 'Low', 'View Profile']]} /></DashboardShell>;
+
+  const renderAdminWorkflowsPage = () => <DashboardShell role="System Admin" title="Workflow Monitor" subtitle="Track platform processes from opportunity publishing to application, interview, offer, contract, and closure."><section className="grid gap-5 xl:grid-cols-2"><SimpleTable headers={['Workflow', 'Current Step', 'Owner', 'Status', 'Action']} rows={[[ 'Data Analyst Graduate Opportunity', 'Applications Review', 'Private Sector Company', 'On Track', 'Open'], ['Frontend Developer Hiring', 'Interview Scheduling', 'SME Company', 'Needs Attention', 'Follow Up'], ['Network Maintenance Project', 'Offer / Contract', 'Oman Broadband', 'On Track', 'View'], ['Training Program Cohort', 'Post-Engagement Evaluation', 'TRA Program Team', 'Pending', 'Remind']]} /><div className="rounded-xl bg-white p-5 shadow-sm"><h3 className="text-base font-bold text-[#123b8b]">Workflow stages</h3><div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">{['Draft','Published','Applied','Shortlisted','Interview','Offered','Contract','Evaluation','Closed'].map((item) => <span key={item} className="rounded-full bg-[#eefcff] px-3 py-2 text-[#123b8b]">{item}</span>)}</div></div></section></DashboardShell>;
+
+  const renderAdminDisputesPage = () => <DashboardShell role="System Admin" title="Disputes & Escalations" subtitle="Manage payment disputes, task delivery issues, applicant complaints, and support escalations."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Open" value="3" icon="⚠️" /><ModuleStat label="Under Review" value="2" icon="🔎" /><ModuleStat label="Resolved" value="14" icon="✅" /><ModuleStat label="Avg. Response" value="1.8d" icon="⏱️" /></section><SimpleTable headers={['Case', 'Related User', 'Type', 'Status', 'Action']} rows={[[ 'Payment not released', 'Freelancer Name', 'Payment', 'Under Review', 'Open Case'], ['Offer amendment concern', 'Maha Al Kharusi', 'Employment Offer', 'New', 'Assign'], ['Project delivery disagreement', 'Global Company', 'Contract', 'Waiting Evidence', 'Review Evidence']]} /></DashboardShell>;
   const renderReportsPage = (role = 'System Admin') => <DashboardShell role={role} title="Reports & Audit Logs" subtitle="High-level analytics and audit trail placeholder for the prototype."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Opportunities" value="120" icon="📌" /><ModuleStat label="Applications" value="680" icon="📄" /><ModuleStat label="Interviews" value="45" icon="📅" /><ModuleStat label="Audit Events" value="1,240" icon="🧾" /></section><SimpleTable headers={['Event', 'Actor', 'Module', 'Date', 'Details']} rows={[[ 'Opportunity published', 'Company User', 'Opportunities', '2026-04-24', 'Published immediately'], ['Candidate nominated', 'Admin', 'Nomination', '2026-04-25', 'Admin-Nominated'], ['Offer issued', 'Company User', 'Employment', '2026-04-26', 'Offer status Issued']]} /></DashboardShell>;
+
+
+  const renderOperatorOpportunitiesPage = () => <DashboardShell role="Operator" title="Opportunity Review Queue" subtitle="Review submitted opportunities, check completeness, and route them to publish, return, or admin escalation."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Submitted" value="8" icon="📣" /><ModuleStat label="Needs Fix" value="3" icon="🛠️" /><ModuleStat label="Ready to Publish" value="5" icon="✅" /><ModuleStat label="Escalated" value="1" icon="🚩" /></section><SimpleTable headers={['Opportunity', 'Owner', 'Type', 'Status', 'Operator Action']} rows={[[ 'Data Analyst Graduate Opportunity', 'Private Company', 'Full-Time', 'Submitted', 'Review completeness'], ['Website UI polish project', 'SME Company', 'Freelance Project', 'Needs Fix', 'Return with notes'], ['Cybersecurity Awareness Workshop', 'TRA Program', 'Training', 'Ready', 'Publish']]}/></DashboardShell>;
+
+  const renderOperatorApplicantsPage = () => <DashboardShell role="Operator" title="Applicant Monitoring" subtitle="Monitor application queues and help keep the hiring workflow moving without taking admin-only actions."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Pending Review" value="18" icon="⏳" /><ModuleStat label="Under Review" value="11" icon="🔎" /><ModuleStat label="Shortlisted" value="9" icon="✅" /><ModuleStat label="Blocked" value="2" icon="⚠️" /></section><SimpleTable headers={['Candidate', 'Opportunity', 'Match', 'Current Step', 'Operator Note']} rows={[[ 'Maha Al Kharusi', 'Data Analyst Graduate', '92%', 'Pending Review', 'Company reminder'], ['Fatma Al Riyami', 'Operations Coordinator', '84%', 'Shortlisted', 'Needs interview slot'], ['Ahmed Al Abri', 'IT Support Specialist', '79%', 'Under Review', 'No action needed']]}/></DashboardShell>;
+
+  const renderOperatorInterviewsPage = () => <DashboardShell role="Operator" title="Interview Coordination" subtitle="Track interview schedules, reminders, rescheduling requests, and missing assessment submissions."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Scheduled" value="12" icon="📅" /><ModuleStat label="Today" value="3" icon="⏰" /><ModuleStat label="Need Assessment" value="4" icon="📝" /><ModuleStat label="Reschedule Requests" value="2" icon="🔁" /></section><SimpleTable headers={['Candidate', 'Opportunity', 'Date', 'Status', 'Action']} rows={[[ 'Maha Al Kharusi', 'Data Analyst Graduate', '2026-05-03 10:00', 'Scheduled', 'Send reminder'], ['Fatma Al Riyami', 'Operations Coordinator', '2026-05-05 11:30', 'Needs Assessment', 'Follow up'], ['Ahmed Al Abri', 'IT Support Specialist', '2026-05-08 09:30', 'Reschedule Requested', 'Coordinate']]}/></DashboardShell>;
+
+  const renderOperatorTrainingPage = () => <DashboardShell role="Operator" title="Training Operations" subtitle="Manage training listings, registrations, certificates, and participant support."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="Active Programs" value="4" icon="🎓" /><ModuleStat label="Registrations" value="146" icon="👥" /><ModuleStat label="Certificates Pending" value="22" icon="🏅" /><ModuleStat label="Support Requests" value="5" icon="💬" /></section><SimpleTable headers={['Program', 'Audience', 'Status', 'Registrations', 'Action']} rows={[[ 'Digital Freelancing Workshop', 'Freelancers', 'Upcoming', '48', 'Manage'], ['Data Analysis and Reporting Skills', 'Job Seekers', 'Open', '63', 'View'], ['TRA Cloud Tools Session', 'Public', 'Open', '35', 'Update']]}/></DashboardShell>;
+
+  const renderOperatorSupportPage = () => <DashboardShell role="Operator" title="Support Cases" subtitle="Handle daily user issues such as profile completion, applications, uploads, payments, and general guidance."><section className="mb-5 grid gap-4 md:grid-cols-4"><ModuleStat label="New" value="7" icon="🆕" /><ModuleStat label="Under Review" value="5" icon="🔎" /><ModuleStat label="Waiting User" value="3" icon="⏳" /><ModuleStat label="Resolved" value="34" icon="✅" /></section><SimpleTable headers={['Case', 'User Type', 'Priority', 'Status', 'Action']} rows={[[ 'Cannot upload CV', 'Job Seeker', 'High', 'New', 'Assist'], ['Payment release question', 'Freelancer', 'Medium', 'Under Review', 'Open'], ['Company profile verification', 'Company', 'High', 'Waiting Documents', 'Follow up']]}/></DashboardShell>;
+
+  const renderOperatorSettingsPage = () => <DashboardShell role="Operator" title="Operator Settings" subtitle="Personal workspace settings only. System-wide configuration remains under System Admin."><section className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"><div className="grid gap-4 md:grid-cols-3"><MiniSelect label="Default Queue" options={['Opportunity Review', 'Applicant Monitoring', 'Support Cases']} /><MiniSelect label="Notification Preference" options={['In-platform + Email', 'In-platform only', 'Email only']} /><MiniSelect label="Language" options={['English', 'Arabic']} /></div><div className="mt-5 rounded bg-blue-50 p-4 text-sm text-[#123b8b]">This page intentionally avoids admin-only settings such as skill taxonomy, matching weights, role permissions, or platform configuration.</div></section></DashboardShell>;
 
   const renderLoginRequiredModal = () => {
     if (!loginRequiredModal) return null;
@@ -2514,12 +3489,19 @@ export default function App() {
           </div>
 
           <div className="mt-6 rounded-2xl bg-[#f7f9fc] p-4 text-sm text-gray-600">
-            Choose Login to continue to the sign-in page, or Later to stay on the current page.
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eaf4ff] text-lg">🔒</span>
+              <div>
+                <div className="font-semibold text-[#123b8b]">You will be redirected back</div>
+                <div className="mt-1 text-xs text-gray-500">After signing in, you will return to this page to continue where you left off.</div>
+              </div>
+            </div>
           </div>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <PrimaryButton className="flex-1" onClick={continueToLoginFromModal}>Login</PrimaryButton>
-            <OutlineButton className="flex-1" onClick={closeLoginRequiredModal}>Later</OutlineButton>
+            <PrimaryButton className="flex-1" onClick={continueToLoginFromModal}>Log in</PrimaryButton>
+            <OutlineButton className="flex-1" onClick={() => { closeLoginRequiredModal(); goToPage('join'); }}>Join Nafadh</OutlineButton>
+            <button type="button" onClick={closeLoginRequiredModal} className="text-sm font-medium text-gray-500 hover:text-gray-700">Later</button>
           </div>
         </div>
       </div>
@@ -2544,16 +3526,30 @@ export default function App() {
         return renderJoinPage();
       case 'dashboard-freelancer':
         return renderUserDashboardPage('Freelancer');
+      case 'freelancer-find-projects':
+        return renderFreelancerFindProjectsPage();
       case 'freelancer-profile':
         return renderFreelancerProfilePage();
       case 'freelancer-proposals':
         return renderFreelancerProposalsPage();
+      case 'freelancer-contracts':
+        return renderFreelancerContractsPage();
       case 'freelancer-projects':
-        return renderFreelancerProjectsPage();
+        return renderFreelancerFindProjectsPage();
       case 'freelancer-portfolio':
-        return renderFreelancerPortfolioPage();
+        return renderFreelancerProfilePage();
       case 'freelancer-payments':
-        return renderFreelancerPaymentsPage();
+        return renderFreelancerPaymentsTasksPage();
+      case 'freelancer-payments-tasks':
+        return renderFreelancerPaymentsTasksPage();
+      case 'freelancer-disputes':
+        return renderFreelancerDisputesPage();
+      case 'freelancer-messages':
+        return renderFreelancerMessagesPage();
+      case 'freelancer-settings':
+        return renderFreelancerSettingsPage();
+      case 'freelancer-support':
+        return renderFreelancerSupportPage();
       case 'dashboard-jobseeker':
         return renderUserDashboardPage('Job Seeker');
       case 'dashboard-company':
@@ -2573,13 +3569,29 @@ export default function App() {
       case 'jobseeker-interviews':
         return renderJobSeekerInterviewsPage();
       case 'jobseeker-training':
-        return renderTrainingPage();
+        return renderJobSeekerTrainingPage();
+      case 'jobseeker-certificates':
+        return renderJobSeekerCertificatesPage();
+      case 'jobseeker-settings':
+        return renderJobSeekerSettingsPage();
       case 'jobseeker-offers':
         return renderJobSeekerOffersPage();
       case 'company-profile':
         return renderCompanyProfilePage();
       case 'individual-profile':
         return renderIndividualProfilePage();
+      case 'individual-post-request':
+        return renderIndividualPostRequestPage();
+      case 'individual-requests':
+        return renderIndividualRequestsPage();
+      case 'individual-messages':
+        return renderIndividualMessagesPage();
+      case 'individual-saved-talent':
+        return renderIndividualSavedTalentPage();
+      case 'individual-invoices':
+        return renderIndividualInvoicesPage();
+      case 'individual-support':
+        return renderIndividualSupportPage();
       case 'company-create-opportunity':
         return renderCompanyCreateOpportunityPage();
       case 'company-applications':
@@ -2590,8 +3602,26 @@ export default function App() {
         return renderCompanyInterviewsPage();
       case 'company-offers':
         return renderCompanyOffersPage();
+      case 'company-tenders':
+        return renderCompanyTendersPage();
+      case 'company-training-requests':
+        return renderCompanyTrainingRequestsPage();
       case 'company-reports':
         return renderReportsPage('Company');
+      case 'operator-opportunities':
+        return renderOperatorOpportunitiesPage();
+      case 'operator-applicants':
+        return renderOperatorApplicantsPage();
+      case 'operator-interviews':
+        return renderOperatorInterviewsPage();
+      case 'operator-training':
+        return renderOperatorTrainingPage();
+      case 'operator-support':
+        return renderOperatorSupportPage();
+      case 'operator-reports':
+        return renderReportsPage('Operator');
+      case 'operator-settings':
+        return renderOperatorSettingsPage();
       case 'admin-config':
         return renderAdminConfigPage();
       case 'admin-skills':
@@ -2602,6 +3632,16 @@ export default function App() {
         return renderAdminOpportunitiesPage();
       case 'admin-users':
         return renderAdminUsersPage();
+      case 'admin-content':
+        return renderAdminContentPage();
+      case 'admin-verification':
+        return renderAdminVerificationPage();
+      case 'admin-interviews':
+        return renderAdminInterviewsPage();
+      case 'admin-workflows':
+        return renderAdminWorkflowsPage();
+      case 'admin-disputes':
+        return renderAdminDisputesPage();
       case 'admin-reports':
         return renderReportsPage('System Admin');
       default:
@@ -2611,7 +3651,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#f2f4f7] text-[#1f2937]">
-      <header className="sticky top-0 z-30 border-b bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-30 bg-white/90 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <button type="button" onClick={() => goToPage('home')} className="flex items-center gap-3 text-left">
             <div>
@@ -2621,7 +3661,7 @@ export default function App() {
           <nav className="hidden items-center gap-6 text-sm md:flex">
             <NavLink label="Home" isActive={currentPage === 'home'} onClick={() => goToPage('home')} />
 
-            <div className="relative">
+            <div className="relative" ref={servicesMenuRef}>
               <button
                 type="button"
                 className={['hire', 'work', 'training'].includes(currentPage) ? 'border-b-2 border-[#123b8b] pb-1 font-semibold text-[#123b8b]' : 'cursor-pointer text-[#1f2937] transition hover:text-[#123b8b]'}
@@ -2652,7 +3692,7 @@ export default function App() {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            <div className="relative">
+            <div className="relative" ref={languageMenuRef}>
               <button
                 type="button"
                 onClick={() => setIsLanguageMenuOpen((prev) => !prev)}
@@ -2668,7 +3708,7 @@ export default function App() {
               ) : null}
             </div>
             <button type="button" onClick={() => goToPage('login')} className="rounded-xl border px-4 py-2">Log in</button>
-            <button type="button" onClick={() => goToPage('join')} className="rounded-xl bg-[#123b8b] px-4 py-2 text-white">Join</button>
+            <button type="button" onClick={() => goToPage('join')} className="rounded-xl bg-[#123b8b] px-4 py-2 text-white">Create Account</button>
           </div>
 
           <button
