@@ -69,12 +69,15 @@ const AR_TRANSLATIONS = {
   'Individuals': 'الأفراد',
   'Tenders': 'المناقصات',
   'Smart Entry': 'دخول ذكي',
+  'Built For Every User': 'مصممة لكل مستخدم',
+  'Choose Your Journey': 'اختر رحلتك',
+  'Start from the card that best matches your role or goal in Nafadh.': 'ابدأ من البطاقة التي تناسب دورك أو هدفك داخل نفاذ.',
   'Choose your path': 'اختر مسارك',
   'Select the journey that matches your goal.': 'اختر المسار الذي يتناسب مع هدفك.',
   'Freelancer': 'مستقل',
   'Job Seeker': 'باحث عن عمل',
   'Company': 'شركة',
-  'Individual Client': 'فرد / عميل مستقل',
+  'Individual Client': 'فرد / تاجر',
   'Create a profile, showcase skills, and apply to independent work opportunities.': 'أنشئ ملفك المهني، اعرض مهاراتك، وتقدم لفرص العمل المستقل.',
   'Explore future employment opportunities and build a career profile.': 'استكشف فرص التوظيف المستقبلية وابنِ ملفك المهني.',
   'Post projects, publish opportunities, request freelancers or job seekers, and manage hiring needs.': 'انشر المشاريع والفرص، واطلب مستقلين أو باحثين عن عمل، وأدر احتياجات التوظيف.',
@@ -210,12 +213,11 @@ const AR_TRANSLATIONS = {
   'A dedicated area for professional development opportunities instead of mixing training randomly with freelance projects.': 'مساحة مخصصة لفرص التطوير المهني بدلًا من خلط التدريب عشوائيًا مع مشاريع العمل المستقل.',
   'A clear service page for freelancers and job seekers. Job seeker opportunities can stay marked as coming soon until the module is activated.': 'صفحة خدمة واضحة للمستقلين والباحثين عن عمل، مع إمكانية إبقاء فرص الباحثين عن عمل مميزة بعبارة قريبًا حتى تفعيل الوحدة.',
   'Organizations that can post opportunities, support training, and participate in the Nafadh ecosystem.': 'جهات يمكنها نشر الفرص ودعم التدريب والمشاركة في منظومة نفاذ.',
-  'Services are no longer only about hiring freelancers. They can support individuals, companies, job seekers, and training journeys.': 'لم تعد الخدمات مقتصرة على توظيف المستقلين فقط، بل يمكنها دعم الأفراد والشركات والباحثين عن عمل ومسارات التدريب.',
   'A mixed preview of freelance projects and future job seeker opportunities.': 'عرض مختصر يجمع بين مشاريع العمل المستقل وفرص الباحثين عن عمل المستقبلية.',
   'Recently joined job seekers who are ready to be discovered by companies and future hiring opportunities.': 'باحثون عن عمل انضموا مؤخرًا وأصبحوا جاهزين للظهور أمام الشركات وفرص التوظيف المستقبلية.',
+  'Browse early job seeker profiles prepared for future hiring opportunities.': 'استعرض ملفات أولية لباحثين عن عمل استعدادًا لفرص التوظيف المستقبلية.',
   'Highlight experienced freelancers with strong service records, ratings, and client reviews.': 'إبراز المستقلين ذوي الخبرة والسجل القوي في تقديم الخدمات والتقييمات وآراء العملاء.',
   'The platform can support companies, traders, shop owners, and individuals who need a technical service such as cameras, networks, websites, or design.': 'يمكن للمنصة دعم الشركات والتجار وأصحاب المحلات والأفراد ممن يحتاجون إلى خدمات تقنية مثل الكاميرات أو الشبكات أو المواقع أو التصميم.',
-  'Browse talent and service requests': 'استعرض الكفاءات وطلبات الخدمات',
   'Choose the journey that matches your goal.': 'اختر المسار الذي يتوافق مع هدفك.',
   'Your gateway to work and services': 'بوابتك إلى العمل والخدمات',
   'Access the right journey for finding work, hiring skilled people, requesting services, and exploring training opportunities through one trusted platform.': 'انتقل إلى المسار المناسب للبحث عن عمل، أو استقطاب أصحاب المهارات، أو طلب الخدمات، أو استكشاف الفرص التدريبية عبر منصة موثوقة واحدة.',
@@ -878,7 +880,7 @@ function Tag({ children, tone = 'blue' }) {
   return <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${tones[tone]}`}>{children}</span>;
 }
 
-function SectionHeader({ badge, title, description, centered = false }) {
+function SectionHeader({ badge, title, description = '', centered = false }) {
   return (
     <div className={`mb-8 ${centered ? 'text-center' : ''}`}>
       {badge ? (
@@ -1618,33 +1620,38 @@ export default function App() {
       <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 text-center">
-            <div className="mb-3 inline-flex rounded-full bg-[#d9e1ea] px-4 py-2 text-sm font-semibold text-[#123b8b]">
-              Smart Entry
+            <div className="mb-3 inline-flex rounded-full bg-[#e8f7fb] px-5 py-2 text-sm font-semibold text-[#123b8b] ring-1 ring-[#10b3b7]/20">
+              Built For Every User
             </div>
-            <h2 className="text-3xl font-bold text-[#123b8b] md:text-4xl">Choose your path</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-gray-600">Select the journey that matches your goal.</p>
+            <h2 className="text-3xl font-bold text-[#123b8b] md:text-4xl">Choose Your Journey</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-gray-600">Start from the card that best matches your role or goal in Nafadh.</p>
           </div>
 
-          <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {userPaths.map((path) => (
+          <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {userPaths.map((path, index) => (
               <button
                 key={path.title}
                 type="button"
                 onClick={() => path.comingSoon ? undefined : goToPage(path.page)}
                 disabled={path.comingSoon}
-                className={`rounded-[1.5rem] border p-6 text-left transition ${
+                className={`group relative min-h-[255px] overflow-hidden rounded-[2rem] border p-7 text-left shadow-sm transition ${
                   path.comingSoon
-                    ? 'cursor-not-allowed border-amber-200 bg-amber-50/70 opacity-80'
-                    : 'border-gray-200 bg-[#f9fbff] hover:-translate-y-1 hover:bg-white hover:shadow-lg'
+                    ? 'cursor-not-allowed border-amber-200 bg-gradient-to-br from-amber-50 via-white to-white opacity-95'
+                    : 'border-[#dce8f7] bg-white hover:-translate-y-1 hover:border-[#10b3b7]/40 hover:shadow-xl'
                 }`}
               >
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#d9e1ea] text-2xl">{path.icon}</div>
-                  {path.comingSoon ? <Tag tone="amber">Coming Soon</Tag> : null}
+                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#10b3b7]/10 transition group-hover:scale-125" />
+                <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-[#123b8b] via-[#10b3b7] to-[#123b8b]" />
+                <div className="relative mb-5 flex items-start justify-between gap-3">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e8f7fb] to-white text-3xl shadow-sm ring-1 ring-[#dce8f7]">{path.icon}</div>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="rounded-full bg-[#f2f7fc] px-3 py-1 text-xs font-bold text-[#123b8b]">0{index + 1}</span>
+                    {path.comingSoon ? <Tag tone="amber">Coming Soon</Tag> : null}
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-[#123b8b]">{path.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-gray-600">{path.description}</p>
-                <div className={`mt-4 text-sm font-bold ${path.comingSoon ? 'text-amber-700' : 'text-[#123b8b]'}`}>
+                <h3 className="relative text-xl font-bold text-[#123b8b]">{path.title}</h3>
+                <p className="relative mt-3 min-h-[72px] text-sm leading-6 text-gray-600">{path.description}</p>
+                <div className={`relative mt-5 inline-flex items-center rounded-full px-4 py-2 text-sm font-bold ${path.comingSoon ? 'bg-amber-100 text-amber-700' : 'bg-[#e8f7fb] text-[#123b8b] group-hover:bg-[#123b8b] group-hover:text-white'}`}>
                   {path.comingSoon ? 'Stay Tuned' : `${path.action} →`}
                 </div>
               </button>
@@ -1686,12 +1693,7 @@ export default function App() {
 
       <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-6">
-        <SectionHeader
-          centered
-          badge="Services"
-          title="Explore Popular Services"
-          description="Services are no longer only about hiring freelancers. They can support individuals, companies, job seekers, and training journeys."
-        />
+        <SectionHeader centered badge="Services" title="Explore Popular Services" />
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
           {services.map((service) => (
             <button
@@ -1702,7 +1704,6 @@ export default function App() {
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-3xl shadow-sm">{service.icon}</div>
               <div className="mt-3 font-semibold text-[#123b8b]">{service.title}</div>
-              <div className="mt-1 text-xs text-gray-500">Browse talent and service requests</div>
             </button>
           ))}
         </div>
@@ -1722,22 +1723,37 @@ export default function App() {
           <OutlineButton onClick={() => goToPage('work')}>Browse All Opportunities</OutlineButton>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {opportunityListings.slice(0, 3).map((job) => (
-            <button
-              type="button"
-              key={job.title}
-              onClick={() => goToPage('work')}
-              className="rounded-2xl bg-white p-6 text-left shadow transition hover:-translate-y-1 hover:shadow-md"
-            >
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <span className="text-3xl">{job.icon}</span>
-                <Tag tone={job.comingSoon ? 'amber' : 'blue'}>{job.audience}</Tag>
-              </div>
-              <div className="font-bold text-[#123b8b]">{job.title}</div>
-              <div className="mt-1 text-sm text-gray-500">{job.company}</div>
-              <div className="mt-4 font-medium text-[#123b8b]">{job.budget}</div>
-            </button>
-          ))}
+          {opportunityListings.slice(0, 3).map((job) => {
+            const isComingSoon = Boolean(job.comingSoon);
+            return (
+              <button
+                type="button"
+                key={job.title}
+                onClick={() => {
+                  if (!isComingSoon) goToPage('work');
+                }}
+                disabled={isComingSoon}
+                className={
+                  isComingSoon
+                    ? 'cursor-not-allowed rounded-2xl border border-amber-200 bg-amber-50/70 p-6 text-left opacity-90 shadow-sm'
+                    : 'rounded-2xl bg-white p-6 text-left shadow transition hover:-translate-y-1 hover:shadow-md'
+                }
+              >
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <span className="text-3xl">{job.icon}</span>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <Tag tone="blue">{job.audience}</Tag>
+                    {isComingSoon ? <Tag tone="amber">Coming Soon</Tag> : null}
+                  </div>
+                </div>
+                <div className="font-bold text-[#123b8b]">{job.title}</div>
+                <div className="mt-1 text-sm text-gray-500">{job.company}</div>
+                <div className={`mt-4 font-medium ${isComingSoon ? 'text-amber-700' : 'text-[#123b8b]'}`}>
+                  {job.budget}
+                </div>
+              </button>
+            );
+          })}
         </div>
         </div>
       </section>
@@ -1748,7 +1764,7 @@ export default function App() {
             <div>
               <h2 className="text-3xl font-bold text-[#123b8b]">Discover Job Seekers</h2>
               <p className="mt-2 max-w-3xl text-gray-600">
-                Recently joined job seekers who are ready to be discovered by companies and future hiring opportunities.
+                Browse early job seeker profiles prepared for future hiring opportunities.
               </p>
             </div>
             <OutlineButton onClick={() => goToPage('hire')}>View Job Seekers</OutlineButton>
@@ -1760,7 +1776,7 @@ export default function App() {
                 key={talent.name}
                 type="button"
                 onClick={() => goToPage('hire')}
-                className="rounded-2xl border border-[#dce8f7] bg-gradient-to-br from-white to-[#eef7ff] p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-[#b8d1f0] hover:shadow-lg"
+                className="relative overflow-hidden rounded-2xl border border-[#dce8f7] bg-gradient-to-br from-white to-[#eef7ff] p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-[#b8d1f0] hover:shadow-lg"
               >
                 <div className="mb-4 flex items-start justify-between gap-4">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">{talent.image}</div>
@@ -1768,7 +1784,6 @@ export default function App() {
                 </div>
                 <div className="font-bold text-[#123b8b]">{talent.name}</div>
                 <div className="text-sm text-gray-600">{talent.role}</div>
-                <div className="mt-3 text-xs font-semibold text-[#123b8b]">Recently joined</div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {talent.skills.slice(0, 3).map((skill) => <Tag key={skill} tone="cyan">{skill}</Tag>)}
                 </div>
