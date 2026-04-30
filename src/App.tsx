@@ -305,6 +305,7 @@ const AR_TRANSLATIONS = {
   'Individual Profile': 'ملف الفرد',
   'My Requests': 'طلباتي',
   'Messages': 'الرسائل',
+  'Message': 'الرسالة',
   'Saved Talent': 'الكفاءات المحفوظة',
   'Invoices': 'الفواتير',
   'Opportunities': 'الفرص',
