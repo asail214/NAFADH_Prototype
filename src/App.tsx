@@ -77,7 +77,7 @@ const AR_TRANSLATIONS = {
   'Freelancer': 'مستقل',
   'Job Seeker': 'باحث عن عمل',
   'Company': 'شركة',
-  'Individual Client': 'فرد / تاجر',
+  'Individual Client': 'فرد / عميل مستقل',
   'Create a profile, showcase skills, and apply to independent work opportunities.': 'أنشئ ملفك المهني، اعرض مهاراتك، وتقدم لفرص العمل المستقل.',
   'Explore future employment opportunities and build a career profile.': 'استكشف فرص التوظيف المستقبلية وابنِ ملفك المهني.',
   'Post projects, publish opportunities, request freelancers or job seekers, and manage hiring needs.': 'انشر المشاريع والفرص، واطلب مستقلين أو باحثين عن عمل، وأدر احتياجات التوظيف.',
@@ -305,7 +305,6 @@ const AR_TRANSLATIONS = {
   'Individual Profile': 'ملف الفرد',
   'My Requests': 'طلباتي',
   'Messages': 'الرسائل',
-  'Message': 'الرسالة',
   'Saved Talent': 'الكفاءات المحفوظة',
   'Invoices': 'الفواتير',
   'Opportunities': 'الفرص',
@@ -3595,34 +3594,51 @@ export default function App() {
   const renderLoginRequiredModal = () => {
     if (!loginRequiredModal) return null;
 
+    const isArabic = language === 'ar';
+
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/55 px-4 backdrop-blur-sm">
-        <div className="w-full max-w-md rounded-[2rem] bg-white p-6 shadow-2xl">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="inline-flex rounded-full bg-[#d9e1ea] px-4 py-2 text-sm font-semibold text-[#123b8b]">Login Required</div>
-              <h2 className="mt-4 text-2xl font-bold text-[#123b8b]">Sign in to view this content</h2>
-              <p className="mt-3 leading-7 text-gray-600">
-                Visitors can browse the public pages, but viewing {loginRequiredModal.context} requires logging in first.
-              </p>
-            </div>
-            <button type="button" onClick={closeLoginRequiredModal} className="rounded-full border border-gray-200 px-3 py-1 text-gray-500 hover:bg-gray-50">×</button>
+        <div className="w-full max-w-sm rounded-[2rem] bg-white p-6 text-center shadow-2xl">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={closeLoginRequiredModal}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:bg-gray-50"
+              aria-label={isArabic ? 'إغلاق' : 'Close'}
+            >
+              ×
+            </button>
           </div>
 
-          <div className="mt-6 rounded-2xl bg-[#f7f9fc] p-4 text-sm text-gray-600">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eaf4ff] text-lg">🔒</span>
-              <div>
-                <div className="font-semibold text-[#123b8b]">You will be redirected back</div>
-                <div className="mt-1 text-xs text-gray-500">After signing in, you will return to this page to continue where you left off.</div>
-              </div>
-            </div>
+          <div className="mx-auto mt-1 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eaf4ff] text-2xl">
+            🔒
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <PrimaryButton className="flex-1" onClick={continueToLoginFromModal}>Log in</PrimaryButton>
-            <OutlineButton className="flex-1" onClick={() => { closeLoginRequiredModal(); goToPage('join'); }}>Join Nafadh</OutlineButton>
-            <button type="button" onClick={closeLoginRequiredModal} className="text-sm font-medium text-gray-500 hover:text-gray-700">Later</button>
+          <div className="mt-4 inline-flex rounded-full bg-[#d9e1ea] px-4 py-2 text-sm font-semibold text-[#123b8b]">
+            {isArabic ? 'تسجيل الدخول مطلوب' : 'Login Required'}
+          </div>
+
+          <h2 className="mt-4 text-2xl font-bold text-[#123b8b]">
+            {isArabic ? 'سجّل الدخول للمتابعة' : 'Sign in to continue'}
+          </h2>
+
+          <p className="mx-auto mt-3 max-w-xs leading-7 text-gray-600">
+            {isArabic
+              ? 'يرجى تسجيل الدخول لعرض التفاصيل أو متابعة الإجراء المطلوب.'
+              : 'Please log in to view details or continue this action.'}
+          </p>
+
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={closeLoginRequiredModal}
+              className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50"
+            >
+              {isArabic ? 'لاحقًا' : 'Later'}
+            </button>
+            <PrimaryButton className="w-full" onClick={continueToLoginFromModal}>
+              {isArabic ? 'تسجيل الدخول' : 'Log in'}
+            </PrimaryButton>
           </div>
         </div>
       </div>
