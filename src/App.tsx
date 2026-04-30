@@ -655,6 +655,129 @@ const AR_TRANSLATIONS = {
   'Menu': 'القائمة',
   'Close menu': 'إغلاق القائمة',
   'Message Center': 'مركز الرسائل',
+
+  // ─── Home page: Service card titles ───
+  'UI/UX Design': 'تصميم واجهات المستخدم',
+  'Web Development': 'تطوير المواقع',
+  'Mobile Apps': 'تطبيقات الهواتف',
+  'Content Writing': 'كتابة المحتوى',
+  'Network & CCTV': 'الشبكات والكاميرات',
+  'Digital Marketing': 'التسويق الرقمي',
+  'Data Analysis': 'تحليل البيانات',
+  'Business Support': 'دعم الأعمال',
+
+  // ─── Home page: Opportunity card content ───
+  'Website Redesign For Telecom Services': 'إعادة تصميم موقع لخدمات الاتصالات',
+  'Junior IT Support Specialist': 'أخصائي دعم تقني مبتدئ',
+  'Build Internal Dashboard For Service Operations': 'بناء لوحة تحكم داخلية لعمليات الخدمة',
+  'Network And CCTV Setup For New House': 'إعداد الشبكة والكاميرات لمنزل جديد',
+  'Arabic Content For Public Awareness Campaign': 'محتوى عربي لحملة توعية عامة',
+  'Data Analyst Graduate Opportunity': 'فرصة خريج محلل بيانات',
+  'Digital Experience Team': 'فريق التجربة الرقمية',
+  'HR Team': 'فريق الموارد البشرية',
+  'Technology Department': 'إدارة التكنولوجيا',
+  'Home Owner': 'صاحب المنزل',
+  'Communications Team': 'فريق الاتصالات',
+  'Recruitment Team': 'فريق التوظيف',
+  'Government Partner': 'شريك حكومي',
+  'TRA Partner Program': 'برنامج شراكة هيئة تنظيم الاتصالات',
+  'Private Sector Company': 'شركة قطاع خاص',
+  '5 Days Left': 'متبقي 5 أيام',
+  '7 Days Left': 'متبقي 7 أيام',
+  '3 Days Left': 'متبقي 3 أيام',
+  '2 Days Left': 'متبقي يومان',
+  '3 Weeks': '3 أسابيع',
+  '1 Month': 'شهر واحد',
+  '2 Weeks': 'أسبوعان',
+  '2 Days': 'يومان',
+
+  // ─── Home page: Talent card content ───
+  'Aisha Al Harthi': 'عائشة الحارثية',
+  'Mohammed Al Hinai': 'محمد الهنائي',
+  'Fatma Al Riyami': 'فاطمة الريامية',
+  'Salim Al Balushi': 'سالم البلوشي',
+  'Maha Al Kharusi': 'مها الخروصية',
+  'Hamed Al Maamari': 'حامد المعمري',
+  'Noura Al Busaidi': 'نورة البوسعيدية',
+  'Senior UI/UX Designer': 'مصممة واجهات مستخدم أولى',
+  'Full Stack Developer': 'مطور ويب متكامل',
+  'Fresh Graduate in Information Systems': 'خريجة جديدة في نظم المعلومات',
+  'Network and CCTV Specialist': 'أخصائي شبكات وكاميرات مراقبة',
+  'Junior Data Analyst': 'محللة بيانات مبتدئة',
+  'Digital Marketing Specialist': 'أخصائي تسويق رقمي',
+  'Junior Frontend Developer': 'مطورة واجهات أمامية مبتدئة',
+
+  // ─── Home page: Location names ───
+  'Muscat': 'مسقط',
+  'Barka': 'بركاء',
+  'Sohar': 'صحار',
+  'Muscat, Oman': 'مسقط، عُمان',
+  'Sohar, Oman': 'صحار، عُمان',
+  'Nizwa, Oman': 'نزوى، عُمان',
+  'Ibri, Oman': 'عبري، عُمان',
+  'Salalah, Oman': 'صلالة، عُمان',
+
+  // ─── Home page: Experience and rate labels ───
+  '6 Years': '6 سنوات',
+  '5 Years': '5 سنوات',
+  '7 Years': '7 سنوات',
+  '3 Years': '3 سنوات',
+  'Entry Level': 'مستوى مبتدئ',
+
+  // ─── Home page: Service categories ───
+  'Design': 'تصميم',
+  'Development': 'تطوير',
+  'Writing': 'كتابة',
+  'Networks': 'شبكات',
+  'Marketing': 'تسويق',
+  'Data': 'بيانات',
+  'Operations': 'عمليات',
+  'IT Support': 'دعم تقني',
+
+  // ─── Contact page: Bottom info cards ───
+  'Questions': 'الاستفسارات',
+  'Suggestions': 'المقترحات',
+  'Bug Reports': 'بلاغات الأخطاء',
+  'Development Notes': 'ملاحظات تطويرية',
+  'Ask about registration, services, opportunities, or how to use Nafadh.': 'استفسر عن التسجيل أو الخدمات أو الفرص أو طريقة استخدام نفاذ.',
+  'Share ideas that can improve the platform experience or future features.': 'شارك أفكارك لتحسين تجربة المنصة أو الميزات المستقبلية.',
+  'Report errors, broken flows, unclear pages, or technical issues.': 'بلّغ عن الأخطاء أو المسارات المعطلة أو الصفحات غير الواضحة أو المشاكل التقنية.',
+  'Send feedback related to UI, UX, system behavior, or service workflow.': 'أرسل ملاحظاتك حول واجهة المستخدم أو تجربة الاستخدام أو سلوك النظام أو سير الخدمات.',
+
+  // ─── Footer ───
+  'A service-focused digital ecosystem connecting work, talent, tenders, and training through one clear experience.': 'منظومة رقمية خدمية تربط بين العمل والكفاءات والمناقصات والتدريب ضمن تجربة واحدة واضحة.',
+
+  // ─── Login Required Modal ───
+  'You will be redirected back': 'سيتم إعادة توجيهك',
+  'After signing in, you will return to this page to continue where you left off.': 'بعد تسجيل الدخول ستعود إلى هذه الصفحة لمتابعة ما بدأته.',
+  'Visitors can browse the public pages, but viewing': 'يمكن للزوار تصفح الصفحات العامة، لكن عرض',
+  'requires logging in first.': 'يتطلب تسجيل الدخول أولًا.',
+  'opportunity details': 'تفاصيل الفرصة',
+  'apply to this opportunity': 'التقديم لهذه الفرصة',
+  'talent profile': 'ملف الكفاءة',
+  'contact talent': 'التواصل مع الكفاءة',
+  'training opportunity': 'الفرصة التدريبية',
+
+  // ─── Additional data translations ───
+  'Full Time': 'دوام كامل',
+  'Oman': 'عُمان',
+  'Nafadh Digital Freelancing Workshop': 'ورشة العمل الحر الرقمي من نفاذ',
+  'TRA Cybersecurity Awareness Training': 'تدريب هيئة تنظيم الاتصالات للتوعية بالأمن السيبراني',
+  'Data Analysis and Reporting Skills': 'مهارات تحليل البيانات وإعداد التقارير',
+  'TRA Cloud and Remote Work Tools Session': 'جلسة هيئة تنظيم الاتصالات لأدوات السحابة والعمل عن بُعد',
+  'A practical workshop to help independent professionals build profiles, present services, and apply to opportunities.': 'ورشة عملية لمساعدة المهنيين المستقلين في بناء ملفاتهم وعرض خدماتهم والتقدم للفرص.',
+  'Foundational awareness opportunity for digital safety and secure online practices.': 'فرصة توعوية أساسية حول الأمان الرقمي وممارسات الإنترنت الآمنة.',
+  'Hands-on learning focused on dashboards, reports, and work-ready analysis skills.': 'تعلم عملي يركز على لوحات المعلومات والتقارير ومهارات التحليل الجاهزة للعمل.',
+  'An introductory session on cloud collaboration and modern remote work practices.': 'جلسة تعريفية حول التعاون السحابي وممارسات العمل عن بُعد الحديثة.',
+  'TRA': 'هيئة تنظيم الاتصالات',
+  'Omantel': 'عمانتل',
+  'Oman Broadband': 'عُمان للنطاق العريض',
+
+  // ─── New hero section text ───
+  'Telecommunications Regulatory Authority': 'هيئة تنظيم الاتصالات',
+  'Your gateway to opportunity, talent, tenders, and training': 'بوابتك إلى الفرص والكفاءات والمناقصات والتدريب',
+  'One platform connecting all across Oman': 'منصة واحدة تربط الجميع في سلطنة عُمان',
+
 };
 
 function translateText(value, language) {
@@ -1362,27 +1485,6 @@ export default function App() {
     },
   ];
 
-  const platformObjectives = [
-    'Unify freelancers, job seekers, companies, operators, and individuals under one clear access experience.',
-    'Allow users to discover opportunities, tenders, training, workshops, and future job openings without confusion.',
-    'Support companies, individuals, freelancers, and job seekers by giving them fair access to service opportunities and projects.',
-    'Prepare the platform for future job seeker features while keeping inactive modules clearly marked as coming soon.',
-  ];
-
-  const platformServices = [
-    'Find Work: opportunities for freelancers and future job seeker roles.',
-    'Hire Talent: browse freelancers and future job seeker profiles using smart filters.',
-    'Training Opportunities: Nafadh workshops and TRA training programs.',
-    'Tenders: clear entry point to the existing tenders platform when needed.',
-  ];
-
-  const aboutStats = [
-    { value: '4+', label: 'User Groups', icon: '👥' },
-    { value: '3', label: 'Core Services', icon: '🧭' },
-    { value: '1', label: 'Unified Entry', icon: '🔗' },
-    { value: 'Ready', label: 'For Arabic', icon: '🌐' },
-  ];
-
   const loginRoles = ['Freelancer', 'Job Seeker', 'Company', 'Individual Client', 'Operator', 'System Admin'];
   const registerRoles = ['Freelancer', 'Job Seeker', 'Company', 'Individual Client'];
 
@@ -1482,68 +1584,71 @@ export default function App() {
         <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-blue-300/20 blur-3xl" />
         <div className="absolute bottom-0 left-1/2 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
 
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div>
-            <div className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur">
-              Unified digital platform for work, tenders, talent, and training
-            </div>
-            <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-tight text-white md:text-6xl">
-              Nafadh connects freelancers, job seekers, companies, and individuals in one clear experience.
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/80">
-              A smarter gateway where each user can quickly find the right journey: find work, hire talent, explore training, or access tenders.
-            </p>
+        <div className="relative mx-auto max-w-4xl px-6 text-center">
+          <div className="inline-flex rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-semibold text-white backdrop-blur">
+            Telecommunications Regulatory Authority | Oman
+          </div>
+          <h1 className="mt-6 text-4xl font-bold leading-tight text-white md:text-6xl">
+            <span className="text-cyan-200">Nafadh</span>{' '}
+            Your gateway to opportunity, talent, tenders, and training
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-white/80">
+            One platform connecting all across Oman
+          </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
-              <button type="button" onClick={() => goToPage('work')} className="rounded-xl bg-white px-5 py-3 font-semibold text-[#123b8b] shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl">Find Work</button>
-              <button type="button" onClick={() => goToPage('hire')} className="rounded-xl border border-white/35 bg-white/10 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/20">Hire Talent</button>
-              <button type="button" onClick={() => goToPage('training')} className="rounded-xl border border-white/35 bg-white/10 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/20">Training Opportunities</button>
-            </div>
-
-            <div className="mt-8 rounded-2xl border border-white/15 bg-white/8 px-5 py-4 backdrop-blur-sm">
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Built for</div>
-              <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-white/85">
-                <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Freelancers</span>
-                <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Job Seekers</span>
-                <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Companies</span>
-                <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Individuals</span>
-                <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Tenders</span>
-              </div>
-            </div>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <button type="button" onClick={() => goToPage('work')} className="rounded-xl bg-white px-6 py-3 font-semibold text-[#123b8b] shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl">Find Work</button>
+            <button type="button" onClick={() => goToPage('hire')} className="rounded-xl border border-white/35 bg-white/10 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/20">Hire Talent</button>
+            <button type="button" onClick={() => goToPage('training')} className="rounded-xl border border-white/35 bg-white/10 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/20">Training Opportunities</button>
           </div>
 
-          <div className="rounded-[2rem] border border-white/20 bg-white/95 p-6 text-[#1f2937] shadow-2xl backdrop-blur">
-            <div className="mb-5">
-              <div className="text-sm font-semibold text-cyan-600">Smart Entry</div>
-              <h2 className="text-2xl font-bold text-[#123b8b]">Choose your path</h2>
-              <p className="mt-1 text-sm text-gray-500">Select the journey that matches your goal.</p>
+          <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-white/15 bg-white/8 px-5 py-4 backdrop-blur-sm">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Built for</div>
+            <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm font-medium text-white/85">
+              <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Freelancers</span>
+              <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Job Seekers</span>
+              <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Companies</span>
+              <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Individuals</span>
+              <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-cyan-200" /> Tenders</span>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {userPaths.map((path) => (
-                <button
-                  key={path.title}
-                  type="button"
-                  onClick={() => path.comingSoon ? undefined : goToPage(path.page)}
-                  disabled={path.comingSoon}
-                  className={`rounded-[1.5rem] border p-5 text-left transition ${
-                    path.comingSoon
-                      ? 'cursor-not-allowed border-amber-200 bg-amber-50/70 opacity-80'
-                      : 'border-gray-200 bg-[#f9fbff] hover:-translate-y-1 hover:bg-white hover:shadow-lg'
-                  }`}
-                >
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#d9e1ea] text-2xl">{path.icon}</div>
-                    {path.comingSoon ? <Tag tone="amber">Coming Soon</Tag> : null}
-                  </div>
-                  <h3 className="text-lg font-bold text-[#123b8b]">{path.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-gray-600">{path.description}</p>
-                  <div className={`mt-4 text-sm font-bold ${path.comingSoon ? 'text-amber-700' : 'text-[#123b8b]'}`}>
-                    {path.comingSoon ? 'Stay Tuned' : `${path.action} →`}
-                  </div>
-                </button>
-              ))}
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 text-center">
+            <div className="mb-3 inline-flex rounded-full bg-[#d9e1ea] px-4 py-2 text-sm font-semibold text-[#123b8b]">
+              Smart Entry
             </div>
+            <h2 className="text-3xl font-bold text-[#123b8b] md:text-4xl">Choose your path</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-gray-600">Select the journey that matches your goal.</p>
+          </div>
+
+          <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {userPaths.map((path) => (
+              <button
+                key={path.title}
+                type="button"
+                onClick={() => path.comingSoon ? undefined : goToPage(path.page)}
+                disabled={path.comingSoon}
+                className={`rounded-[1.5rem] border p-6 text-left transition ${
+                  path.comingSoon
+                    ? 'cursor-not-allowed border-amber-200 bg-amber-50/70 opacity-80'
+                    : 'border-gray-200 bg-[#f9fbff] hover:-translate-y-1 hover:bg-white hover:shadow-lg'
+                }`}
+              >
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#d9e1ea] text-2xl">{path.icon}</div>
+                  {path.comingSoon ? <Tag tone="amber">Coming Soon</Tag> : null}
+                </div>
+                <h3 className="text-lg font-bold text-[#123b8b]">{path.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-gray-600">{path.description}</p>
+                <div className={`mt-4 text-sm font-bold ${path.comingSoon ? 'text-amber-700' : 'text-[#123b8b]'}`}>
+                  {path.comingSoon ? 'Stay Tuned' : `${path.action} →`}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -3778,7 +3883,7 @@ export default function App() {
               <FooterLinkButton label="Home" onClick={() => goToPage('home')} />
               <FooterLinkButton label="About Nafadh" onClick={() => goToPage('about')} />
               <FooterLinkButton label="Contact" onClick={() => goToPage('contact')} />
-              <FooterLinkButton label="Login" onClick={() => goToPage('login')} />
+              <FooterLinkButton label="Log in" onClick={() => goToPage('login')} />
               <FooterLinkButton label="Join" onClick={() => goToPage('join')} />
             </div>
           </div>
