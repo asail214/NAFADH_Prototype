@@ -2702,6 +2702,7 @@ export default function App() {
       setRedirectAfterLogin(null);
     } else {
       setCurrentPage(rolePageMap[role] || 'dashboard-freelancer');
+      setRedirectAfterLogin(null);
     }
     setIsServicesMenuOpen(false);
     setIsMobileMenuOpen(false);
