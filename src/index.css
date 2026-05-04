@@ -1,5 +1,54 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "NafadhArabic";
+  src: url("./assets/fonts/AR.otf") format("opentype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "NafadhEnglish";
+  src: url("./assets/fonts/EN.otf") format("opentype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+1E00-1EFF, U+2000-206F;
+}
+
+@font-face {
+  font-family: "NafadhNumbers";
+  src: url("./assets/fonts/NUM.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0030-0039, U+0660-0669, U+06F0-06F9;
+}
+
+:root {
+  font-family: "NafadhNumbers", "NafadhArabic", "NafadhEnglish", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "NafadhNumbers", "NafadhArabic", "NafadhEnglish", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
 .trusted-logo-track {
   display: flex;
   width: max-content;
